@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Master Chariot</string>
+    <string name="tab_diagnostics">Diagnostics</string>
+    <string name="tab_settings">Settings</string>
 </resources>
