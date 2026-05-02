@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
     private fun handleIntent(intent: Intent?) {
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
-            intent.removeExtra(Intent.EXTRA_TEXT) // чтобы при повороте не обработать повторно
+            intent.removeExtra(Intent.EXTRA_TEXT)
         }
     }
 }

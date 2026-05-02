@@ -18,14 +18,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+//import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+//import androidx.navigation.NavController
+//import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 import kotlin.collections.iterator
 
@@ -34,9 +35,9 @@ import kotlin.collections.iterator
 @Composable
 fun formatId(id: Long): String {
     return when (id) {
-        0L -> "Сегодня"
-        1L -> "Вчера"
-        else -> id.toString()
+        0L -> "Первый"
+        1L -> "Второй"
+        else -> (id + 1).toString()
     }
 }
 
@@ -46,7 +47,7 @@ fun FunctionListScreenRoute(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues.Zero,
     viewModel: FunctionViewModel = viewModel<FunctionViewModel>(),
-    navController: NavController = rememberNavController(),
+//    navController: NavController = rememberNavController(),
     listState: LazyListState = rememberLazyListState()
 ) {
 
@@ -73,7 +74,7 @@ fun FunctionListScreenRoute(
         }
     }
 
-    val context = LocalContext.current
+//    val context = LocalContext.current
 
     FunctionListScreen(
         viewModel.state, modifier, contentPadding, viewModel::action, listState,
@@ -104,7 +105,8 @@ private fun FunctionListScreen(
             .fillMaxSize(),
         contentPadding = combinedPadding,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        state = listState
+        state = listState,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         state.groupedFunctions.forEach { (id, functions) ->
             stickyHeader {

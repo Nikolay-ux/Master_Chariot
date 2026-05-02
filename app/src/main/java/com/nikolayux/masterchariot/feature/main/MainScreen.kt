@@ -29,8 +29,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+//import androidx.navigation.NavController
+//import androidx.navigation.compose.rememberNavController
+//import com.nikolayux.masterchariot.Navigation
+//import com.nikolayux.masterchariot.NavigationScreen
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.feature.functions.ui.FunctionListScreenRoute
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
@@ -47,7 +49,7 @@ enum class Tab(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    navController: NavController = rememberNavController(),
+//    navController: NavController = rememberNavController(),
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(Tab.Events) }
     Scaffold(
@@ -96,7 +98,7 @@ fun MainScreen(
                 Tab.Events -> FunctionListScreenRoute(
                     contentPadding = PaddingValues(top = insets.calculateTopPadding(), bottom = 100.dp),
                     listState = postsListState,
-                    navController = navController
+//                    navController = navController
                 )
 
                 Tab.Users -> Unit

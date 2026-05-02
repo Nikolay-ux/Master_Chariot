@@ -26,7 +26,7 @@ fun NavigationScreen(
 
     NavHost(navController = navController, startDestination = Navigation.Main) {
         composable<Navigation.Main> {
-            MainScreen(navController)
+            MainScreen()
         }
     }
 }
