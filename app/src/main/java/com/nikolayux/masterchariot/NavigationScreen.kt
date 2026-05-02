@@ -28,6 +28,10 @@ fun NavigationScreen(
         composable<Navigation.Main> {
             MainScreen()
         }
+
+        composable<Navigation.Connect> {
+            MainScreen()
+        }
     }
 }
 
@@ -35,4 +39,7 @@ fun NavigationScreen(
 sealed interface Navigation {
     @Serializable
     object Main : Navigation
+
+    @Serializable
+    object Connect : Navigation
 }

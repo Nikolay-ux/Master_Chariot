@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,10 +30,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-//import androidx.navigation.NavController
-//import androidx.navigation.compose.rememberNavController
-//import com.nikolayux.masterchariot.Navigation
-//import com.nikolayux.masterchariot.NavigationScreen
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.nikolayux.masterchariot.Navigation
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.feature.functions.ui.FunctionListScreenRoute
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
@@ -49,7 +49,7 @@ enum class Tab(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-//    navController: NavController = rememberNavController(),
+    navController: NavController = rememberNavController(),
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(Tab.Events) }
     Scaffold(
@@ -85,6 +85,11 @@ fun MainScreen(
         floatingActionButton = {
             when (selectedTab) {
                 Tab.Events -> {
+                    TextButton(onClick = {
+                        navController.navigate(Navigation.Connect)
+                    }) {
+                        Text(stringResource(R.string.connect))
+                    }
                 }
 
                 Tab.Users -> Unit
