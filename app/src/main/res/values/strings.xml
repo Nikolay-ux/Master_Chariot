@@ -3,4 +3,17 @@
     <string name="tab_diagnostics">Diagnostics</string>
     <string name="tab_settings">Settings</string>
     <string name="connect">Connect</string>
+    <string name="bt_denied">Bluetooth must be enabled for the app to work</string>
+    <string name="bt_not_supported">Bluetooth not supported</string>
+    <string name="unknown">Unknown error</string>
+    <string name="wifi_not_implemented">Wi-Fi not yet implemented</string>
+    <string name="ble_not_implemented">BluetoothLE not yet implemented</string>
+    <string name="bt_enabled">Bluetooth enabled</string>
+    <string name="bt_disabled">Bluetooth disabled</string>
+    <string name="bt_enable">Enable Bluetooth</string>
+    <string name="bt_not_found">No devices found. Please start searching.</string>
+    <string name="bt_search">Find devices</string>
+    <string name="bt_wait">Waiting for Bluetooth to turn on</string>
+    <string name="bt_need_permissions">The application requires Bluetooth permissions.</string>
+    <string name="bt_grant_permissions">Grant permissions</string>
 </resources>

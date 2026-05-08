@@ -9,13 +9,16 @@ import androidx.annotation.RequiresApi
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var navController: NavController
     private var sharedText: String? = null
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.S)
+    @androidx.annotation.RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

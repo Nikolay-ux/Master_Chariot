@@ -4,4 +4,17 @@
     <string name="tab_diagnostics">Диагностика</string>
     <string name="tab_settings">Настройки</string>
     <string name="connect">Подключить</string>
+    <string name="bt_denied">Bluetooth должен быть включен для работы приложения</string>
+    <string name="bt_not_supported">Bluetooth не поддерживается</string>
+    <string name="unknown">Неизвестная ошибка</string>
+    <string name="wifi_not_implemented">Wi-Fi not yet implemented</string>
+    <string name="ble_not_implemented">BluetoothLE not yet implemented</string>
+    <string name="bt_enabled">Bluetooth включен</string>
+    <string name="bt_disabled">Bluetooth выключен</string>
+    <string name="bt_enable">Включить Bluetooth</string>
+    <string name="bt_not_found">Устройства не найдены. Начните поиск</string>
+    <string name="bt_search">Найти устройства</string>
+    <string name="bt_wait">Ожидание включения Bluetooth</string>
+    <string name="bt_need_permissions">Для работы приложения необходимы разрешения Bluetooth.</string>
+    <string name="bt_grant_permissions">Предоставить разрешения</string>
 </resources>

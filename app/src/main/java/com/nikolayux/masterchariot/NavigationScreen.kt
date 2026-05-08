@@ -3,15 +3,18 @@ package com.nikolayux.masterchariot
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 //import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.nikolayux.masterchariot.feature.connect.ui.ConnectScreenRoute
 //import androidx.navigation.toRoute
 import com.nikolayux.masterchariot.feature.main.MainScreen
 import kotlinx.serialization.Serializable
 
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.S)
+@androidx.annotation.RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])
 @Composable
 fun NavigationScreen(
     navController: NavHostController,
@@ -26,11 +29,11 @@ fun NavigationScreen(
 
     NavHost(navController = navController, startDestination = Navigation.Main) {
         composable<Navigation.Main> {
-            MainScreen()
+            MainScreen(navController)
         }
 
         composable<Navigation.Connect> {
-            MainScreen()
+            ConnectScreenRoute(modifier = Modifier, navController = navController)
         }
     }
 }
