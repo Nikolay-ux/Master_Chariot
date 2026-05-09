@@ -9,6 +9,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+//import android.os.Build
+//import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +34,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class BluetoothService(private val context: Context) {
     private val _connectionState = MutableStateFlow(ConnectionStatus.Disconnected)
     val connectionState: StateFlow<ConnectionStatus> = _connectionState.asStateFlow()
@@ -42,6 +48,9 @@ class BluetoothService(private val context: Context) {
     private val _events = Channel<BluetoothEvent>()
     val events: ReceiveChannel<BluetoothEvent> = _events
 
+    private val _pairingCompleted = MutableSharedFlow<BluetoothDevice>()
+    val pairingCompleted: SharedFlow<BluetoothDevice> = _pairingCompleted.asSharedFlow()
+
     private val bluetoothAdapter: BluetoothAdapter? by lazy {
         val bluetoothManager = context.getSystemService(BluetoothManager::class.java)
         bluetoothManager?.adapter
@@ -51,7 +60,21 @@ class BluetoothService(private val context: Context) {
     private var connectedThread: ConnectedThread? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val receiver = object : BroadcastReceiver() {
+    private val bondStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == BluetoothDevice.ACTION_BOND_STATE_CHANGED) {
+                val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                val bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1)
+                if (device != null && bondState == BluetoothDevice.BOND_BONDED) {
+                    serviceScope.launch {
+                        _pairingCompleted.emit(device)
+                    }
+                }
+            }
+        }
+    }
+
+    private val discoveryReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 BluetoothDevice.ACTION_FOUND -> {
@@ -71,20 +94,17 @@ class BluetoothService(private val context: Context) {
 
     init {
         val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-        context.registerReceiver(receiver, filter)
+        context.registerReceiver(discoveryReceiver, filter)
+
+        val filterBond = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+        context.registerReceiver(bondStateReceiver, filterBond, Context.RECEIVER_NOT_EXPORTED)
     }
 
     fun isBluetoothSupported(): Boolean = bluetoothAdapter != null
 
     fun isBluetoothEnabled(): Boolean = bluetoothAdapter?.isEnabled == true
 
-    fun enableBluetooth(): Intent {
-        return if (!isBluetoothEnabled()) {
-            Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-        } else {
-            throw IllegalStateException("Bluetooth is already enabled")
-        }
-    }
+    fun enableBluetooth(): Intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun startDiscovery() {
@@ -100,10 +120,29 @@ class BluetoothService(private val context: Context) {
         bluetoothAdapter?.cancelDiscovery()
     }
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    fun pair(device: BluetoothDevice) {
+        if (device.bondState == BluetoothDevice.BOND_NONE) {
+            device.createBond()
+        }
+    }
+
+    fun startConnectThread(device: BluetoothDevice) {
+        connectThread = ConnectThread(device).apply { start() }
+    }
+
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun connectToDevice(device: BluetoothDevice) {
         if (connectionState.value == ConnectionStatus.Connecting) return
         _connectionState.value = ConnectionStatus.Connecting
-        connectThread = ConnectThread(device).apply { start() }
+        if (device.bondState == BluetoothDevice.BOND_NONE) {
+            Log.d("Bluetooth service", "ну по идее должно работать сопряжение")
+            pair(device)
+        } else {
+            Log.d("Bluetooth service", "вот это подключение сразу" + device.bondState)
+            startConnectThread(device)
+        }
     }
 
     fun sendData(data: ByteArray) {
@@ -123,7 +162,7 @@ class BluetoothService(private val context: Context) {
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun release() {
         disconnect()
-        context.unregisterReceiver(receiver)
+        context.unregisterReceiver(discoveryReceiver)
         serviceScope.cancel()
     }
     private inner class ConnectThread(private val device: BluetoothDevice) : Thread() {
@@ -153,6 +192,7 @@ class BluetoothService(private val context: Context) {
                     try {
                         it.close()
                     } catch (ex: IOException) { /* ignore */
+                        ex.message?.let { msg -> Log.e("BluetoothService", msg) }
                     }
                 }
             }
@@ -162,6 +202,7 @@ class BluetoothService(private val context: Context) {
             try {
                 socket?.close()
             } catch (e: IOException) { /* ignore */
+                e.message?.let { msg -> Log.e("BluetoothService", msg) }
             }
         }
     }

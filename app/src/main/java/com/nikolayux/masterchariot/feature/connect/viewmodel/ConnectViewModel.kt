@@ -2,7 +2,9 @@ package com.nikolayux.masterchariot.feature.connect.viewmodel
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @HiltViewModel
 class ConnectViewModel @Inject constructor(
     private val bluetoothService: BluetoothService
@@ -68,9 +71,25 @@ class ConnectViewModel @Inject constructor(
                 _state.update { it.copy(lastReceivedData = data) }
             }
         }
+
+//        viewModelScope.launch {
+//            bluetoothService.pairingRequest.collect { device ->
+//                pendingPairingDevice = device
+//                _effect.send(ConnectEffect.RequestPairingPin(device))
+//            }
+//        }
+
+        viewModelScope.launch {
+            bluetoothService.pairingCompleted.collect { device ->
+//                _state.update { it.copy(connectingDeviceAddress = device.address) }
+//                bluetoothService.proceedWithConnectionAfterPairing(device)
+                bluetoothService.startConnectThread(device)
+            }
+        }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
     fun onIntent(message: ConnectMessage) {
         viewModelScope.launch {
             when (message) {
@@ -88,27 +107,25 @@ class ConnectViewModel @Inject constructor(
                     }
                     onIntent(ConnectMessage.StartDiscovery)
                 }
-
                 is ConnectMessage.BluetoothEnableDenied -> {
                     _state.update { it.copy(isBluetoothEnableRequested = false) }
                     _effect.send(
                         ConnectEffect.ShowToast(R.string.bt_denied)
                     )
                 }
-
                 is ConnectMessage.SelectConnectionType -> selectConnectionType(message.type)
             }
         }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
     private suspend fun selectConnectionType(type: ConnectionType) {
         _state.update { it.copy(selectedConnectionType = type) }
         when (type) {
             ConnectionType.Wifi -> {
                 _effect.send(ConnectEffect.ShowToast(R.string.wifi_not_implemented))
             }
-
             ConnectionType.Bluetooth -> {
                 if (!bluetoothService.isBluetoothEnabled()) {
                     _state.update { it.copy(isBluetoothEnableRequested = true) }
@@ -118,7 +135,6 @@ class ConnectViewModel @Inject constructor(
                     onIntent(ConnectMessage.StartDiscovery)
                 }
             }
-
             ConnectionType.BluetoothLe -> {
                 _effect.send(ConnectEffect.ShowToast(R.string.ble_not_implemented))
             }
@@ -134,16 +150,13 @@ class ConnectViewModel @Inject constructor(
             val intent = try {
                 bluetoothService.enableBluetooth()
             } catch (e: IllegalStateException) {
+                e.message?.let { Log.e("ConnectViewModel", it) }
                 return
             }
-            Log.d("BluetoothDebug", "toggleBluetooth: supported=${bluetoothService.isBluetoothSupported()}, enabled=${bluetoothService.isBluetoothEnabled()}")
-            Log.d("BluetoothDebug", "Отправляю эффект RequestBluetoothEnable")
             _effect.send(ConnectEffect.RequestBluetoothEnable(intent))
-            if (bluetoothService.isBluetoothEnabled()) {
-                _state.update { it.copy(isBluetoothEnabled = true) }
-            }
-            Log.d("BluetoothDebug", "toggleBluetooth: supported=${bluetoothService.isBluetoothSupported()}, enabled=${bluetoothService.isBluetoothEnabled()}")
-
+//            if (bluetoothService.isBluetoothEnabled()) {
+//                _state.update { it.copy(isBluetoothEnabled = true) }
+//            }
         } else {
             _state.update { it.copy(isBluetoothEnabled = true) }
         }
@@ -157,9 +170,12 @@ class ConnectViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun connectToDevice(device: BluetoothDevice) {
         if (_state.value.connectionStatus == ConnectionStatus.Connecting) return
         _state.update { it.copy(connectingDeviceAddress = device.address) }
+        Log.d("ConnectViewModel", "здесь попытка подключения")
         bluetoothService.connectToDevice(device)
     }
 
@@ -175,7 +191,7 @@ class ConnectViewModel @Inject constructor(
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     override fun onCleared() {
         super.onCleared()
-        bluetoothService.release()
+//        bluetoothService.release()
     }
 
 }
