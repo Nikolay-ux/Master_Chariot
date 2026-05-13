@@ -1,7 +1,5 @@
 package com.nikolayux.masterchariot.feature.functions.ui
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-@RequiresApi(Build.VERSION_CODES.O)
 class FunctionViewModel(
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {

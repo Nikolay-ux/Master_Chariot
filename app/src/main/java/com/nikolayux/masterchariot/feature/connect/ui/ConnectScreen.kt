@@ -7,7 +7,6 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,7 +53,6 @@ import com.nikolayux.masterchariot.feature.connect.viewmodel.ConnectViewModel
 import kotlinx.coroutines.flow.StateFlow
 
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -79,12 +77,14 @@ fun ConnectScreenRoute(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ConnectEffect.Connected -> {
-                    Toast.makeText(context, "заебок", Toast.LENGTH_SHORT).show()
-//                    navController.popBackStack()
+                    Toast.makeText(context, "Подключено", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
                 }
+
                 is ConnectEffect.ShowToast -> {
                     Toast.makeText(context, effect.messageResId, Toast.LENGTH_SHORT).show()
                 }
+
                 is ConnectEffect.RequestBluetoothEnable -> {
                     bluetoothEnableLauncher.launch(effect.intent)
                 }
@@ -92,11 +92,19 @@ fun ConnectScreenRoute(
         }
     }
 
-    val permissions = listOf(
-        Manifest.permission.BLUETOOTH_SCAN,
-        Manifest.permission.BLUETOOTH_CONNECT,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    )
+    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        listOf(
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    } else {
+        listOf(
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    }
 
     val permissionsState = rememberMultiplePermissionsState(permissions)
 
@@ -231,7 +239,7 @@ fun BluetoothContent(
                             isConnecting = state.connectionStatus == ConnectionStatus.Connecting
                                     && state.connectingDeviceAddress == device.address,
                             onClick = { onIntent(ConnectMessage.ConnectToDevice(device)) }
-                            )
+                        )
                     }
                 }
             }
@@ -249,13 +257,13 @@ fun DeviceItem(
     onClick: () -> Unit
 ) {
     ListItem(
-        headlineContent =  { Text(device.name ?: device.address) },
+        headlineContent = { Text(device.name ?: device.address) },
         supportingContent = { Text(device.address) },
         trailingContent = {
             if (isConnecting) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp))
             } else {
-                Icon (Icons.Default.Bluetooth, contentDescription = null)
+                Icon(Icons.Default.Bluetooth, contentDescription = null)
             }
         },
         modifier = Modifier.clickable { onClick() }

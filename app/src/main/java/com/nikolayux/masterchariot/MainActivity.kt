@@ -17,7 +17,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var navController: NavController
     private var sharedText: String? = null
 
-    @RequiresApi(Build.VERSION_CODES.S)
     @androidx.annotation.RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,8 +1,6 @@
 package com.nikolayux.masterchariot.feature.functions.ui
 
 import android.content.res.Configuration
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,7 +29,6 @@ import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 import kotlin.collections.iterator
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun formatId(id: Long): String {
     return when (id) {
@@ -41,7 +38,6 @@ fun formatId(id: Long): String {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun FunctionListScreenRoute(
     modifier: Modifier = Modifier,
@@ -82,7 +78,6 @@ fun FunctionListScreenRoute(
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun FunctionListScreen(
     state: FunctionListState,
@@ -130,7 +125,6 @@ private fun FunctionListScreen(
 
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 private fun FunctionListCardPreview() {
@@ -149,7 +143,6 @@ private fun FunctionListCardPreview() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
 private fun FunctionListCardPreviewDark() {

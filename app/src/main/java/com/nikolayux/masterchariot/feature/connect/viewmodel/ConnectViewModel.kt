@@ -2,9 +2,7 @@ package com.nikolayux.masterchariot.feature.connect.viewmodel
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,7 +23,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @HiltViewModel
 class ConnectViewModel @Inject constructor(
     private val bluetoothService: BluetoothService
@@ -88,7 +85,6 @@ class ConnectViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
     fun onIntent(message: ConnectMessage) {
         viewModelScope.launch {
@@ -118,7 +114,6 @@ class ConnectViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
     private suspend fun selectConnectionType(type: ConnectionType) {
         _state.update { it.copy(selectedConnectionType = type) }
@@ -170,7 +165,6 @@ class ConnectViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun connectToDevice(device: BluetoothDevice) {
         if (_state.value.connectionStatus == ConnectionStatus.Connecting) return

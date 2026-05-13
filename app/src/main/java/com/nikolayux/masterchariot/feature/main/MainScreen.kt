@@ -1,7 +1,5 @@
 package com.nikolayux.masterchariot.feature.main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.PaddingValues
@@ -45,7 +43,6 @@ enum class Tab(
     Users(R.string.tab_settings, Icons.Default.Settings)
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -112,7 +109,6 @@ fun MainScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun MainScreenPreview() {

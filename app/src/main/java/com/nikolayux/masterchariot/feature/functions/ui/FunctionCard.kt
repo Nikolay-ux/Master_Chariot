@@ -1,7 +1,5 @@
 package com.nikolayux.masterchariot.feature.functions.ui
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -50,7 +48,6 @@ fun FunctionCard(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 private fun FunctionCardPreview() {

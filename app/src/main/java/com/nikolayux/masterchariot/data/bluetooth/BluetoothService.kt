@@ -11,9 +11,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-//import android.os.Build
-//import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +31,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class BluetoothService(private val context: Context) {
     private val _connectionState = MutableStateFlow(ConnectionStatus.Disconnected)
     val connectionState: StateFlow<ConnectionStatus> = _connectionState.asStateFlow()
@@ -93,11 +89,16 @@ class BluetoothService(private val context: Context) {
     }
 
     init {
-        val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-        context.registerReceiver(discoveryReceiver, filter)
-
+        val filterDiscovery = IntentFilter(BluetoothDevice.ACTION_FOUND)
         val filterBond = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
-        context.registerReceiver(bondStateReceiver, filterBond, Context.RECEIVER_NOT_EXPORTED)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(discoveryReceiver, filterDiscovery, Context.RECEIVER_NOT_EXPORTED)
+            context.registerReceiver(bondStateReceiver, filterBond, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(discoveryReceiver, filterDiscovery)
+            context.registerReceiver(bondStateReceiver, filterBond)
+        }
     }
 
     fun isBluetoothSupported(): Boolean = bluetoothAdapter != null
@@ -132,7 +133,6 @@ class BluetoothService(private val context: Context) {
     }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun connectToDevice(device: BluetoothDevice) {
         if (connectionState.value == ConnectionStatus.Connecting) return
         _connectionState.value = ConnectionStatus.Connecting
