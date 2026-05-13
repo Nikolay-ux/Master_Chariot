@@ -1,11 +1,9 @@
 package com.nikolayux.masterchariot
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
