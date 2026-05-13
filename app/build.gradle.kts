@@ -10,13 +10,13 @@ plugins {
 android {
     namespace = "com.nikolayux.masterchariot"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "com.nikolayux.masterchariot"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -35,6 +35,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     buildFeatures {
         compose = true
@@ -62,6 +63,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.hilt.android)
     implementation(libs.transport.runtime)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.accompanist.permissions)

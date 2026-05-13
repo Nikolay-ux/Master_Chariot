@@ -1,6 +1,6 @@
 [versions]
 accompanistPermissions = "0.37.3"
-agp = "9.0.1"
+agp = "9.2.1"
 coreKtx = "1.18.0"
 hiltNavigationCompose = "1.3.0"
 ksp = "2.3.7"
@@ -23,6 +23,7 @@ coilCompose = "2.7.0"
 materialIconsExtended = "1.7.8"
 ui = "1.11.1"
 transportRuntime = "4.1.1"
+desugar_jdk_libs = "2.1.5"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -54,6 +55,7 @@ kotlin-obd-api = { module = "com.github.eltonvs:kotlin-obd-api", version.ref = "
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 transport-runtime = { group = "com.google.android.datatransport", name = "transport-runtime", version.ref = "transportRuntime" }
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
