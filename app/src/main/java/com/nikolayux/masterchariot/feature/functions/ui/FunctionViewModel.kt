@@ -1,63 +1,64 @@
 package com.nikolayux.masterchariot.feature.functions.ui
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import androidx.lifecycle.viewModelScope
+import com.nikolayux.masterchariot.data.bluetooth.BluetoothService
+import com.nikolayux.masterchariot.data.obd2.Obd2Service
+import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class FunctionViewModel(
-    private val savedStateHandle: SavedStateHandle,
+@HiltViewModel
+class FunctionViewModel @Inject constructor(
+    private val obd2Service: Obd2Service,
+    private val bluetoothService: BluetoothService
 ) : ViewModel() {
-    var state by mutableStateOf(
-        FunctionListState(
-            List(10, ::createEvent)
-        )
-    )
-        private set
-    private val _effects = MutableSharedFlow<FunctionListEffect>(extraBufferCapacity = 1)
-    val effects = _effects.asSharedFlow()
+    private val _speed = MutableStateFlow(0)
+    val speed: StateFlow<Int> = _speed.asStateFlow()
 
-    fun action(message: FunctionListMessage) {
-        when (message) {
-            is FunctionListMessage.LikeClicked -> like(message.id)
+    private val _rpm = MutableStateFlow(0)
+    val rpm: StateFlow<Int> = _rpm.asStateFlow()
+
+    private val _isConnected = MutableStateFlow(false)
+    val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
+
+    private val _dtcCodes = MutableStateFlow<List<String>>(emptyList())
+    val dtcCodes: StateFlow<List<String>> = _dtcCodes.asStateFlow()
+
+    private val _isLoadingDtc = MutableStateFlow(false)
+    val isLoadingDtc: StateFlow<Boolean> = _isLoadingDtc.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            obd2Service.speed.collect { _speed.value = it }
+        }
+        viewModelScope.launch {
+            obd2Service.rpm.collect { _rpm.value = it }
+        }
+        viewModelScope.launch {
+            bluetoothService.connectionState.collect { status ->
+                _isConnected.value = status == ConnectionStatus.Connected
+            }
+        }
+        viewModelScope.launch {
+            bluetoothService.connectionState.collect { status ->
+                _isConnected.value = status == ConnectionStatus.Connected
+                if (_isConnected.value) {
+                    loadDtcCodes()
+                }
+            }
         }
     }
 
-    fun updateData() {
-        val grouped = state.functions.sortedBy { it.id }.groupBy { it.id }
-        state = state.copy(
-            functions = state.functions, groupedFunctions = grouped
-        )
-    }
-
-    private fun like(id: Long) {
-        state = state.copy(
-            functions = state.functions.map { currentEvent ->
-                if (currentEvent.id == id) {
-                    currentEvent.copy(
-                        likes = if (currentEvent.likedByMe) {
-                            currentEvent.likes - 1
-                        } else {
-                            currentEvent.likes + 1
-                        }, likedByMe = !currentEvent.likedByMe
-                    )
-                } else {
-                    currentEvent
-                }
-            })
-        savedStateHandle[EVENT_KEY] = state.functions
-    }
-
-    private fun createEvent(id: Int) = FunctionUiModel(
-        id = id.toLong(),
-        likes = 2,
-        likedByMe = true,
-    )
-
-    private companion object {
-        const val EVENT_KEY = "event"
+    fun loadDtcCodes() {
+        viewModelScope.launch {
+            _isLoadingDtc.value = true
+            obd2Service.readDiagnosticTroubleCodes()
+            _isLoadingDtc.value = false
+        }
     }
 }

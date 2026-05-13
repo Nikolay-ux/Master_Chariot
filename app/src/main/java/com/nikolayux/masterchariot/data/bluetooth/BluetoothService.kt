@@ -207,10 +207,16 @@ class BluetoothService(private val context: Context) {
         }
     }
 
+    fun getConnectedSocket(): BluetoothSocket? {
+        return connectedThread?.getSocket()
+    }
+
     private inner class ConnectedThread(private val socket: BluetoothSocket) : Thread() {
         private val inputStream: InputStream = socket.inputStream
         private val outputStream: OutputStream = socket.outputStream
         private val buffer = ByteArray(1024)
+
+        fun getSocket(): BluetoothSocket = socket
 
         @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
         override fun run() {

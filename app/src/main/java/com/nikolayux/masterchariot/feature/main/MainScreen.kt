@@ -32,15 +32,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.Navigation
 import com.nikolayux.masterchariot.R
-import com.nikolayux.masterchariot.feature.functions.ui.FunctionListScreenRoute
+import com.nikolayux.masterchariot.feature.functions.ui.FunctionScreen
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 
 enum class Tab(
     @param:StringRes val titleRes: Int,
     val icon: ImageVector
 ) {
-    Events(R.string.tab_diagnostics, Icons.Default.Build),
-    Users(R.string.tab_settings, Icons.Default.Settings)
+    Diagnostics(R.string.tab_diagnostics, Icons.Default.Build),
+    Settings(R.string.tab_settings, Icons.Default.Settings)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +48,7 @@ enum class Tab(
 fun MainScreen(
     navController: NavController = rememberNavController(),
 ) {
-    var selectedTab by rememberSaveable { mutableStateOf(Tab.Events) }
+    var selectedTab by rememberSaveable { mutableStateOf(Tab.Diagnostics) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -81,7 +81,7 @@ fun MainScreen(
         },
         floatingActionButton = {
             when (selectedTab) {
-                Tab.Events -> {
+                Tab.Diagnostics -> {
                     FloatingActionButton(onClick = {
                         navController.navigate(Navigation.Connect)
                     }) {
@@ -89,7 +89,7 @@ fun MainScreen(
                     }
                 }
 
-                Tab.Users -> Unit
+                Tab.Settings -> Unit
             }
         },
         modifier = Modifier.fillMaxSize()
@@ -97,13 +97,12 @@ fun MainScreen(
         val postsListState = rememberLazyListState()
         Crossfade(modifier = Modifier.fillMaxSize(), targetState = selectedTab) { tab ->
             when (tab) {
-                Tab.Events -> FunctionListScreenRoute(
+                Tab.Diagnostics -> FunctionScreen(
                     contentPadding = PaddingValues(top = insets.calculateTopPadding(), bottom = 100.dp),
-                    listState = postsListState,
 //                    navController = navController
                 )
 
-                Tab.Users -> Unit
+                Tab.Settings -> Unit
             }
         }
     }
