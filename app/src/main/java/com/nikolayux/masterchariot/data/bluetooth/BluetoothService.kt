@@ -52,9 +52,25 @@ class BluetoothService(private val context: Context) {
         bluetoothManager?.adapter
     }
 
+    private val _btState = MutableStateFlow(bluetoothAdapter?.isEnabled)
+    val btState: StateFlow<Boolean?> = _btState.asStateFlow()
+
     private var connectThread: ConnectThread? = null
     private var connectedThread: ConnectedThread? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    private val bluetoothStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == BluetoothAdapter.ACTION_STATE_CHANGED) {
+                val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
+                val isEnabled = when (state) {
+                    BluetoothAdapter.STATE_ON -> true
+                    else -> false
+                }
+                _btState.value = isEnabled
+            }
+        }
+    }
 
     private val bondStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -89,13 +105,16 @@ class BluetoothService(private val context: Context) {
     }
 
     init {
+        val filterState = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         val filterDiscovery = IntentFilter(BluetoothDevice.ACTION_FOUND)
         val filterBond = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(bluetoothStateReceiver, filterState, Context.RECEIVER_NOT_EXPORTED)
             context.registerReceiver(discoveryReceiver, filterDiscovery, Context.RECEIVER_NOT_EXPORTED)
             context.registerReceiver(bondStateReceiver, filterBond, Context.RECEIVER_NOT_EXPORTED)
         } else {
+            context.registerReceiver(bluetoothStateReceiver, filterState)
             context.registerReceiver(discoveryReceiver, filterDiscovery)
             context.registerReceiver(bondStateReceiver, filterBond)
         }
@@ -162,7 +181,9 @@ class BluetoothService(private val context: Context) {
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun release() {
         disconnect()
+        context.unregisterReceiver(bluetoothStateReceiver)
         context.unregisterReceiver(discoveryReceiver)
+        context.unregisterReceiver(bondStateReceiver)
         serviceScope.cancel()
     }
     private inner class ConnectThread(private val device: BluetoothDevice) : Thread() {

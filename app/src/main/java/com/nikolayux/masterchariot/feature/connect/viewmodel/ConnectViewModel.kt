@@ -69,6 +69,12 @@ class ConnectViewModel @Inject constructor(
             }
         }
 
+        viewModelScope.launch {
+            bluetoothService.btState.collect { isEnable ->
+                _state.update { it.copy(isBluetoothEnabled = isEnable == true) }
+            }
+        }
+
 //        viewModelScope.launch {
 //            bluetoothService.pairingRequest.collect { device ->
 //                pendingPairingDevice = device
@@ -78,7 +84,7 @@ class ConnectViewModel @Inject constructor(
 
         viewModelScope.launch {
             bluetoothService.pairingCompleted.collect { device ->
-//                _state.update { it.copy(connectingDeviceAddress = device.address) }
+                _state.update { it.copy(connectingDeviceAddress = device.address) }
 //                bluetoothService.proceedWithConnectionAfterPairing(device)
                 bluetoothService.startConnectThread(device)
             }
@@ -126,6 +132,7 @@ class ConnectViewModel @Inject constructor(
                     _state.update { it.copy(isBluetoothEnableRequested = true) }
                     onIntent(ConnectMessage.ToggleBluetooth)
                 } else {
+                    _state.update { it.copy(isBluetoothEnabled = true) }
                     _state.update { it.copy(isBluetoothEnableRequested = false) }
                     onIntent(ConnectMessage.StartDiscovery)
                 }
