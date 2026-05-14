@@ -107,15 +107,14 @@ class BluetoothService(private val context: Context) {
     init {
         val filterState = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         val filterDiscovery = IntentFilter(BluetoothDevice.ACTION_FOUND)
+        context.registerReceiver(discoveryReceiver, filterDiscovery)
         val filterBond = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(bluetoothStateReceiver, filterState, Context.RECEIVER_NOT_EXPORTED)
-            context.registerReceiver(discoveryReceiver, filterDiscovery, Context.RECEIVER_NOT_EXPORTED)
             context.registerReceiver(bondStateReceiver, filterBond, Context.RECEIVER_NOT_EXPORTED)
         } else {
             context.registerReceiver(bluetoothStateReceiver, filterState)
-            context.registerReceiver(discoveryReceiver, filterDiscovery)
             context.registerReceiver(bondStateReceiver, filterBond)
         }
     }
