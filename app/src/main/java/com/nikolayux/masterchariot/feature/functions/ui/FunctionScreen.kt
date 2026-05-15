@@ -1,5 +1,6 @@
 package com.nikolayux.masterchariot.feature.functions.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,6 +45,10 @@ fun FunctionScreen(
     val isConnected by viewModel.isConnected.collectAsState()
     val dtcCodes by viewModel.dtcCodes.collectAsState()
     val isLoadingDtc by viewModel.isLoadingDtc.collectAsState()
+
+//    LaunchedEffect(speed, rpm) {
+//        Log.d("FunctionScreen", "Speed: $speed, RPM: $rpm")
+//    }
 
     Column(
         modifier = modifier
