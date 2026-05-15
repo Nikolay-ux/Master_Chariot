@@ -109,14 +109,16 @@ class BluetoothService(private val context: Context) {
         val filterDiscovery = IntentFilter(BluetoothDevice.ACTION_FOUND)
         context.registerReceiver(discoveryReceiver, filterDiscovery)
         val filterBond = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+        context.registerReceiver(bluetoothStateReceiver, filterState, Context.RECEIVER_NOT_EXPORTED)
+        context.registerReceiver(bondStateReceiver, filterBond, Context.RECEIVER_NOT_EXPORTED)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(bluetoothStateReceiver, filterState, Context.RECEIVER_NOT_EXPORTED)
-            context.registerReceiver(bondStateReceiver, filterBond, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            context.registerReceiver(bluetoothStateReceiver, filterState)
-            context.registerReceiver(bondStateReceiver, filterBond)
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            context.registerReceiver(bluetoothStateReceiver, filterState, Context.RECEIVER_NOT_EXPORTED)
+//            context.registerReceiver(bondStateReceiver, filterBond, Context.RECEIVER_NOT_EXPORTED)
+//        } else {
+//            context.registerReceiver(bluetoothStateReceiver, filterState)
+//            context.registerReceiver(bondStateReceiver, filterBond)
+//        }
     }
 
     fun isBluetoothSupported(): Boolean = bluetoothAdapter != null
