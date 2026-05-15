@@ -1,5 +1,9 @@
 package com.nikolayux.masterchariot.data.obd2
 
+import android.util.Log
+import com.github.eltonvs.obd.command.Switcher
+import com.github.eltonvs.obd.command.at.ResetAdapterCommand
+import com.github.eltonvs.obd.command.at.SetEchoCommand
 import com.github.eltonvs.obd.command.control.TroubleCodesCommand
 import com.github.eltonvs.obd.command.engine.RPMCommand
 import com.github.eltonvs.obd.command.engine.SpeedCommand
@@ -55,6 +59,16 @@ class Obd2Service @Inject constructor(
         val inputStream = socket.inputStream
         val outputStream = socket.outputStream
         obdConnection = ObdDeviceConnection(inputStream, outputStream)
+        withContext(Dispatchers.IO) {
+            obdConnection?.let { conn ->
+                try {
+                    conn.run(ResetAdapterCommand())
+                    conn.run(SetEchoCommand(Switcher.OFF))
+                } catch (e: Exception) {
+                    Log.e("Obd2Service", "Init error: ${e.message}")
+                }
+            }
+        }
     }
 
     private suspend fun startPolling() {

@@ -25,6 +25,7 @@ ui = "1.11.1"
 transportRuntime = "4.1.1"
 desugar_jdk_libs = "2.1.5"
 foundation = "1.11.1"
+runtime = "1.11.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -58,6 +59,7 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 transport-runtime = { group = "com.google.android.datatransport", name = "transport-runtime", version.ref = "transportRuntime" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
