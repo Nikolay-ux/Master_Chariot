@@ -3,7 +3,7 @@ package com.nikolayux.masterchariot.feature.car.domain
 import kotlinx.coroutines.flow.Flow
 
 interface CarRepository {
-    fun getAllCars(): Flow<List<Car>>
+    val cars: Flow<List<Car>>
     suspend fun getCarById(id: Int): Car?
     suspend fun addCar(car: Car)
     suspend fun updateCar(car: Car)

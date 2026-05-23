@@ -8,7 +8,7 @@ import com.nikolayux.masterchariot.feature.car.domain.Car
 
 @Database(entities = [Car::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun carDao(): CarDao
+    abstract val carDao: CarDao
 
     companion object {
         @Volatile

@@ -2,19 +2,16 @@ package com.nikolayux.masterchariot.feature.car.data
 
 import com.nikolayux.masterchariot.data.local.CarDao
 import com.nikolayux.masterchariot.data.local.CarEntity
+import com.nikolayux.masterchariot.feature.car.domain.Car
 import com.nikolayux.masterchariot.feature.car.domain.CarRepository
 import kotlinx.coroutines.flow.Flow
-import com.nikolayux.masterchariot.feature.car.domain.Car
 import kotlinx.coroutines.flow.map
 
 class CarRepositoryImpl(
     private val carDao: CarDao
 ) : CarRepository {
-
-    override fun getAllCars(): Flow<List<Car>> {
-        return carDao.getAllCars().map { entities ->
-            entities.map { it.toDomain() }
-        }
+    override val cars: Flow<List<Car>> = carDao.getAllCars().map {
+        it.map(CarEntity::toDomain)
     }
 
     override suspend fun getCarById(id: Int): Car? {
@@ -22,11 +19,25 @@ class CarRepositoryImpl(
     }
 
     override suspend fun addCar(car: Car) {
-        carDao.insert(car.toEntity())
+        val newCar = CarEntity(
+            id = 0,
+            name = car.name,
+            mileage = car.mileage,
+            serviceInterval = car.serviceInterval,
+            isUsingMiles = car.isUsingMiles
+        )
+        carDao.insert(newCar)
     }
 
     override suspend fun updateCar(car: Car) {
-        carDao.update(car.toEntity())
+        val newCar = CarEntity(
+            id = car.id,
+            name = car.name,
+            mileage = car.mileage,
+            serviceInterval = car.serviceInterval,
+            isUsingMiles = car.isUsingMiles
+        )
+        carDao.update(newCar)
     }
 
     override suspend fun deleteCar(id: Int) {
@@ -36,20 +47,4 @@ class CarRepositoryImpl(
     override suspend fun deleteAllCars() {
         carDao.deleteAll()
     }
-
-    private fun CarEntity.toDomain(): Car = Car(
-        id = id,
-        name = name,
-        mileage = mileage,
-        serviceInterval = serviceInterval,
-        isUsingMiles = isUsingMiles
-    )
-
-    private fun Car.toEntity(): CarEntity = CarEntity(
-        id = id,
-        name = name,
-        mileage = mileage,
-        serviceInterval = serviceInterval,
-        isUsingMiles = isUsingMiles
-    )
 }

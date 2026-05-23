@@ -3,6 +3,7 @@ package com.nikolayux.masterchariot.data.local
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.nikolayux.masterchariot.feature.car.domain.Car
 
 @Entity(tableName = "cars")
 data class CarEntity(
@@ -16,5 +17,13 @@ data class CarEntity(
     @ColumnInfo("serviceInterval")
     val serviceInterval: Int,
     @ColumnInfo("isUsingMiles")
-    val isUsingMiles: Boolean = false
-)
+    val isUsingMiles: Boolean = false,
+) {
+    fun toDomain() = Car(
+        id = id,
+        name = name,
+        mileage = mileage,
+        serviceInterval = serviceInterval,
+        isUsingMiles = isUsingMiles
+    )
+}
