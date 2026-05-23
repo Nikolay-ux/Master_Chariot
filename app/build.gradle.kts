@@ -45,6 +45,8 @@ android {
 dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.room)
+    implementation(libs.androidx.room.ktx)
     implementation(libs.kotlin.obd.api)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
