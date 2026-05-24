@@ -16,4 +16,6 @@
     <string name="bt_wait">Waiting for Bluetooth to turn on</string>
     <string name="bt_need_permissions">The application requires Bluetooth permissions.</string>
     <string name="bt_grant_permissions">Grant permissions</string>
+    <string name="car_menu_delete">Delete</string>
+    <string name="car_menu_edit">Edit</string>
 </resources>

@@ -17,4 +17,6 @@
     <string name="bt_wait">Ожидание включения Bluetooth</string>
     <string name="bt_need_permissions">Для работы приложения необходимы разрешения Bluetooth.</string>
     <string name="bt_grant_permissions">Предоставить разрешения</string>
+    <string name="car_menu_delete">Удалить</string>
+    <string name="car_menu_edit">Изменить</string>
 </resources>

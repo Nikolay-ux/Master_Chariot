@@ -1,4 +1,4 @@
-package com.nikolayux.masterchariot.feature.car.ui
+package com.nikolayux.masterchariot.feature.car.list.state
 
 import com.nikolayux.masterchariot.feature.car.domain.Car
 
