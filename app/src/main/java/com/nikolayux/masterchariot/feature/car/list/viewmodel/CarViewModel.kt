@@ -4,24 +4,24 @@ import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nikolayux.masterchariot.data.local.AppDatabase
 import com.nikolayux.masterchariot.feature.car.data.CarRepositoryImpl
 import com.nikolayux.masterchariot.feature.car.domain.Car
 import com.nikolayux.masterchariot.feature.car.domain.CarRepository
 import com.nikolayux.masterchariot.feature.car.list.state.AddNewCarState
-//import com.nikolayux.masterchariot.feature.car.list.state.CarListEffect
 import com.nikolayux.masterchariot.feature.car.list.state.CarListMessage
 import com.nikolayux.masterchariot.feature.car.list.state.CarListState
 import com.nikolayux.masterchariot.feature.car.list.state.CarUiModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
-class CarViewModel(
+@HiltViewModel
+class CarViewModel @Inject constructor(
     application: Application
-) : AndroidViewModel(application) {
+) : ViewModel() {
     private val repository: CarRepository =
         CarRepositoryImpl(AppDatabase.getInstance(application).carDao)
 
@@ -36,9 +36,6 @@ class CarViewModel(
         }
     }
 
-//    private val _effects = MutableSharedFlow<CarListEffect>(extraBufferCapacity = 1)
-//    val effects = _effects.asSharedFlow()
-
     fun action(message: CarListMessage) {
         when (message) {
             is CarListMessage.AddCar -> {
@@ -49,7 +46,19 @@ class CarViewModel(
                 state = state.copy(addNewCarState = null)
             }
 
-            is CarListMessage.Edit -> updateCar(message.car)
+            is CarListMessage.Edit -> {
+                state = state.copy(
+                    addNewCarState = AddNewCarState(
+                        id = message.car.id,
+                        name = message.car.name,
+                        mileage = message.car.mileage,
+                        serviceInterval = message.car.serviceInterval,
+                        isUsingMiles = message.car.isUsingMiles,
+                        isEdit = true
+                    )
+                )
+            }
+
             is CarListMessage.Delete -> viewModelScope.launch {
                 repository.deleteCar(message.id)
             }
@@ -78,41 +87,52 @@ class CarViewModel(
             }
 
             CarListMessage.SaveNewCar -> {
-                val newData = state.addNewCarState ?: return
-                viewModelScope.launch {
-                    state = state.copy(addNewCarState = newData.copy(isSaving = true))
-                    val car = CarUiModel(
-                        name = state.addNewCarState?.name ?: "",
-                        mileage = state.addNewCarState?.mileage ?: 0,
-                        serviceInterval = state.addNewCarState?.serviceInterval ?: 7000,
-                        isUsingMiles = state.addNewCarState?.isUsingMiles ?: false
-                    )
-                    repository.addCar(toCar(car))
-                    state = state.copy(addNewCarState = null)
-                }
+                saveCar()
             }
+
+            CarListMessage.UpdateCar -> {
+                updateCar()
+            }
+
         }
     }
 
     fun toCar(car: CarUiModel) = Car(
+        id = car.id,
         name = car.name,
         mileage = car.mileage,
         serviceInterval = car.serviceInterval,
         isUsingMiles = car.isUsingMiles
     )
 
-    fun updateCar(car: CarUiModel) {
+    fun saveCar() {
+        val newData = state.addNewCarState ?: return
         viewModelScope.launch {
-            val newCar = Car(
-                id = car.id,
-                name = car.name,
-                mileage = car.mileage,
-                serviceInterval = car.serviceInterval,
-                isUsingMiles = car.isUsingMiles
+            state = state.copy(addNewCarState = newData.copy(isSaving = true))
+            val car = CarUiModel(
+                name = state.addNewCarState?.name ?: "",
+                mileage = state.addNewCarState?.mileage ?: 0,
+                serviceInterval = state.addNewCarState?.serviceInterval ?: 7000,
+                isUsingMiles = state.addNewCarState?.isUsingMiles ?: false
             )
-            repository.updateCar(newCar)
+            repository.addCar(toCar(car))
+            state = state.copy(addNewCarState = null)
         }
     }
 
-
+    fun updateCar() {
+        val newData = state.addNewCarState ?: return
+        viewModelScope.launch {
+            state = state.copy(addNewCarState = newData.copy(isSaving = true))
+            val car = CarUiModel(
+                id = state.addNewCarState?.id ?: 0,
+                name = state.addNewCarState?.name ?: "",
+                mileage = state.addNewCarState?.mileage ?: 0,
+                serviceInterval = state.addNewCarState?.serviceInterval ?: 7000,
+                isUsingMiles = state.addNewCarState?.isUsingMiles ?: false
+            )
+            repository.updateCar(toCar(car))
+            state = state.copy(addNewCarState = null)
+        }
+    }
 }

@@ -18,4 +18,16 @@
     <string name="bt_grant_permissions">Grant permissions</string>
     <string name="car_menu_delete">Delete</string>
     <string name="car_menu_edit">Edit</string>
+    <string name="dialog_car_name">Name</string>
+    <string name="dialog_car_mileage">Mileage</string>
+    <string name="dialog_car_interval">Maintenance interval</string>
+    <string name="dialog_car_measure">Measure of distance</string>
+    <string name="dialog_car_cancel">Cancel</string>
+    <string name="dialog_car_save">Save</string>
+    <string name="car_measure_miles">Miles</string>
+    <string name="car_measure_km">km</string>
+    <string name="menu_car_name">Name</string>
+    <string name="menu_car_mileage">Mileage</string>
+    <string name="menu_car_interval">Maintenance interval</string>
+    <string name="menu_car_measure">Measure of distance</string>
 </resources>

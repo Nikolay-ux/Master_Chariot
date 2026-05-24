@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.transport.runtime)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     ksp(libs.hilt.android.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.accompanist.permissions)
     testImplementation(libs.junit)

@@ -19,4 +19,16 @@
     <string name="bt_grant_permissions">Предоставить разрешения</string>
     <string name="car_menu_delete">Удалить</string>
     <string name="car_menu_edit">Изменить</string>
+    <string name="dialog_car_name">Название</string>
+    <string name="dialog_car_mileage">Пробег</string>
+    <string name="dialog_car_interval">Интервал ТО</string>
+    <string name="dialog_car_measure">Мера расстояния</string>
+    <string name="dialog_car_cancel">Отмена</string>
+    <string name="dialog_car_save">Сохранить</string>
+    <string name="car_measure_miles">мили</string>
+    <string name="car_measure_km">км</string>
+    <string name="menu_car_name">Название</string>
+    <string name="menu_car_mileage">Пробег</string>
+    <string name="menu_car_interval">Интервал ТО</string>
+    <string name="menu_car_measure">Мера расстояния</string>
 </resources>

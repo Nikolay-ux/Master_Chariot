@@ -20,7 +20,6 @@ class CarRepositoryImpl(
 
     override suspend fun addCar(car: Car) {
         val newCar = CarEntity(
-            id = 0,
             name = car.name,
             mileage = car.mileage,
             serviceInterval = car.serviceInterval,

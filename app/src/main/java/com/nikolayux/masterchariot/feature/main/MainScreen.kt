@@ -27,11 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.Navigation
 import com.nikolayux.masterchariot.R
+import com.nikolayux.masterchariot.feature.car.list.ui.CarListScreenRoute
 import com.nikolayux.masterchariot.feature.functions.ui.FunctionScreen
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 
@@ -89,20 +89,28 @@ fun MainScreen(
                     }
                 }
 
-                Tab.Settings -> Unit
+                Tab.Settings -> {}
             }
         },
         modifier = Modifier.fillMaxSize()
     ) { insets ->
-        val postsListState = rememberLazyListState()
+//        val postsListState = rememberLazyListState()
         Crossfade(modifier = Modifier.fillMaxSize(), targetState = selectedTab) { tab ->
             when (tab) {
                 Tab.Diagnostics -> FunctionScreen(
-                    contentPadding = PaddingValues(top = insets.calculateTopPadding(), bottom = 100.dp),
+                    contentPadding = PaddingValues(
+                        top = insets.calculateTopPadding(),
+                        bottom = insets.calculateBottomPadding()
+                    ),
 //                    navController = navController
                 )
 
-                Tab.Settings -> Unit
+                Tab.Settings -> CarListScreenRoute(
+                    contentPadding = PaddingValues(
+                        top = insets.calculateTopPadding(),
+                        bottom = insets.calculateBottomPadding()
+                    )
+                )
             }
         }
     }
