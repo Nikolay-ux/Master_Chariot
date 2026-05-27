@@ -47,9 +47,9 @@ class FunctionViewModel @Inject constructor(
         viewModelScope.launch {
             bluetoothService.connectionState.collect { status ->
                 _isConnected.value = status == ConnectionStatus.Connected
-                if (_isConnected.value) {
-                    loadDtcCodes()
-                }
+//                if (_isConnected.value) {
+//                    loadDtcCodes()
+//                }
             }
         }
     }
@@ -57,7 +57,7 @@ class FunctionViewModel @Inject constructor(
     fun loadDtcCodes() {
         viewModelScope.launch {
             _isLoadingDtc.value = true
-            obd2Service.readDiagnosticTroubleCodes()
+//            obd2Service.readDiagnosticTroubleCodes()
             _isLoadingDtc.value = false
         }
     }
