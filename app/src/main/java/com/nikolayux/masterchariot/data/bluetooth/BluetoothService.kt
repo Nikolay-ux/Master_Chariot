@@ -59,6 +59,10 @@ class BluetoothService(private val context: Context) {
     private var connectedThread: ConnectedThread? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    private val _socketReady = MutableSharedFlow<BluetoothSocket>(replay = 1)
+    val socketReady: SharedFlow<BluetoothSocket> = _socketReady.asSharedFlow()
+
+
     private val bluetoothStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == BluetoothAdapter.ACTION_STATE_CHANGED) {
@@ -208,6 +212,9 @@ class BluetoothService(private val context: Context) {
                     it.connect()
                     _connectionState.value = ConnectionStatus.Connected
                     connectedThread = ConnectedThread(it).apply { start() }
+                    serviceScope.launch {
+                        _socketReady.emit(it)
+                    }
                 } catch (e: IOException) {
                     _connectionState.value = ConnectionStatus.Error
                     serviceScope.launch { _events.send(BluetoothEvent.Error("Connection failed: ${e.message}")) }
