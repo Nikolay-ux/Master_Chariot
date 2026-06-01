@@ -82,7 +82,7 @@ fun MainScreen(
             when (selectedTab) {
                 Tab.Diagnostics -> {
                     FloatingActionButton(onClick = {
-                        navController.navigate(Navigation.Connect)
+//                        navController.navigate(Navigation.Connect)
                     }) {
                         Text(stringResource(R.string.connect))
                     }

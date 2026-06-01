@@ -5,6 +5,7 @@ plugins {
     id("kotlin-parcelize")
     kotlin("plugin.serialization")
     alias(libs.plugins.hilt)
+    id("com.chaquo.python")
 }
 
 android {
@@ -21,6 +22,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
     }
 
     buildTypes {
@@ -42,11 +47,22 @@ android {
     }
 }
 
+chaquopy {
+    defaultConfig {
+        version = "3.14"
+
+        pip {
+            install("python-OBD")
+        }
+    }
+}
+
 dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.room)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.kotlin.obd.api)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -68,6 +84,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.transport.runtime)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+    debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
