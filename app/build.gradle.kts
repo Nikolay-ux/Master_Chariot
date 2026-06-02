@@ -5,6 +5,8 @@ plugins {
     id("kotlin-parcelize")
     kotlin("plugin.serialization")
     alias(libs.plugins.hilt)
+
+    id("com.chaquo.python")
 }
 
 android {
@@ -21,6 +23,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters += listOf(
+                "arm64-v8a",
+                "x86_64"
+            )
+        }
     }
 
     buildTypes {
@@ -39,6 +48,15 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+}
+
+chaquopy {
+    defaultConfig {
+        version = "3.11"
+        pyc {
+            src = false
+        }
     }
 }
 

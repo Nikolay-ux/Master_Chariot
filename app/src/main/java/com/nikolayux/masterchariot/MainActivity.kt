@@ -2,10 +2,13 @@ package com.nikolayux.masterchariot
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,6 +21,18 @@ class MainActivity : ComponentActivity() {
     @androidx.annotation.RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!Python.isStarted()) {
+            Python.start(AndroidPlatform(this))
+        }
+
+        val py = Python.getInstance()
+
+        val module = py.getModule("test_module")
+
+        val result = module.callAttr("hello")
+
+        Log.d("PYTHON", result.toString())
 
         handleIntent(intent)
 

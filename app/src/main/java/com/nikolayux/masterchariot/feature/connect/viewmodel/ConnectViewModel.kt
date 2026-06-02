@@ -98,7 +98,7 @@ class ConnectViewModel @Inject constructor(
                 is ConnectMessage.ToggleBluetooth -> toggleBluetooth()
                 is ConnectMessage.StartDiscovery -> startDiscovery()
                 is ConnectMessage.ConnectToDevice -> connectToDevice(message.device)
-                is ConnectMessage.SendData -> sendData(message.data)
+//                is ConnectMessage.SendData -> sendData(message.data)
                 is ConnectMessage.Disconnect -> disconnect()
                 is ConnectMessage.BluetoothEnabled -> {
                     _state.update {
@@ -180,9 +180,9 @@ class ConnectViewModel @Inject constructor(
         bluetoothService.connectToDevice(device)
     }
 
-    private fun sendData(data: ByteArray) {
-        bluetoothService.sendData(data)
-    }
+//    private fun sendData(data: ByteArray) {
+//        bluetoothService.sendData(data)
+//    }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private fun disconnect() {

@@ -9,7 +9,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
@@ -27,8 +26,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 import java.util.UUID
 
 class BluetoothService(private val context: Context) {
@@ -56,7 +53,7 @@ class BluetoothService(private val context: Context) {
     val btState: StateFlow<Boolean?> = _btState.asStateFlow()
 
     private var connectThread: ConnectThread? = null
-    private var connectedThread: ConnectedThread? = null
+//    private var connectedThread: ConnectedThread? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val _socketReady = MutableSharedFlow<BluetoothSocket>(replay = 1)
@@ -169,16 +166,16 @@ class BluetoothService(private val context: Context) {
         }
     }
 
-    fun sendData(data: ByteArray) {
-        connectedThread?.write(data)
-    }
+//    fun sendData(data: ByteArray) {
+//        connectedThread?.write(data)
+//    }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun disconnect() {
         serviceScope.launch {
             stopDiscovery()
             connectThread?.cancel()
-            connectedThread?.cancel()
+//            connectedThread?.cancel()
             _connectionState.value = ConnectionStatus.Disconnected
         }
     }
@@ -211,7 +208,7 @@ class BluetoothService(private val context: Context) {
                 try {
                     it.connect()
                     _connectionState.value = ConnectionStatus.Connected
-                    connectedThread = ConnectedThread(it).apply { start() }
+//                    connectedThread = ConnectedThread(it).apply { start() }
                     serviceScope.launch {
                         _socketReady.emit(it)
                     }
@@ -236,50 +233,10 @@ class BluetoothService(private val context: Context) {
         }
     }
 
-    fun getConnectedSocket(): BluetoothSocket? {
-        return connectedThread?.getSocket()
-    }
+//    fun getConnectedSocket(): BluetoothSocket? {
+//        return connectedThread?.getSocket()
+//    }
 
-    private inner class ConnectedThread(private val socket: BluetoothSocket) : Thread() {
-        private val inputStream: InputStream = socket.inputStream
-        private val outputStream: OutputStream = socket.outputStream
-        private val buffer = ByteArray(1024)
-
-        fun getSocket(): BluetoothSocket = socket
-
-        @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
-        override fun run() {
-            while (_connectionState.value == ConnectionStatus.Connected) {
-                val bytes = try {
-                    inputStream.read(buffer)
-                } catch (e: IOException) {
-                    -1
-                }
-                if (bytes > 0) {
-                    val data = buffer.copyOf(bytes)
-                    serviceScope.launch { _receivedData.emit(data) }
-                } else {
-                    break
-                }
-            }
-            disconnect()
-        }
-
-        fun write(data: ByteArray) {
-            try {
-                outputStream.write(data)
-            } catch (e: IOException) {
-                serviceScope.launch { _events.send(BluetoothEvent.Error("Send failed: ${e.message}")) }
-            }
-        }
-
-        fun cancel() {
-            try {
-                socket.close()
-            } catch (e: IOException) { /* ignore */
-            }
-        }
-    }
 
     companion object {
         private val SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
