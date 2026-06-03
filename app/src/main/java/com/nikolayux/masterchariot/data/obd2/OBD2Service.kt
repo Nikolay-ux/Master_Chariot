@@ -8,6 +8,8 @@ import com.github.eltonvs.obd.command.at.SetEchoCommand
 import com.github.eltonvs.obd.command.at.SetHeadersCommand
 import com.github.eltonvs.obd.command.at.SetLineFeedCommand
 import com.github.eltonvs.obd.command.control.TroubleCodesCommand
+import com.github.eltonvs.obd.command.engine.RPMCommand
+import com.github.eltonvs.obd.command.engine.SpeedCommand
 import com.github.eltonvs.obd.connection.ObdDeviceConnection
 import com.nikolayux.masterchariot.data.bluetooth.BluetoothService
 import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
@@ -138,14 +140,15 @@ class Obd2Service @Inject constructor(
         try {
 
             val result = withContext(Dispatchers.IO) {
-                obdConnection?.run(RawObdCommand("01 0C"))
+                obdConnection?.run(RPMCommand())
+//                obdConnection?.run(RawObdCommand("01 0C"))
             }
 
             Log.d("OBD", "RPM response = $result")
 
-            val raw = result?.value ?: return
+//            val raw = result?.value ?: return
 
-            val rpmValue = parseRpm(raw)
+            val rpmValue = parseRpm(result?.rawResponse?.value ?: "")
 
             if (rpmValue != null) {
                 _rpm.value = rpmValue
@@ -164,14 +167,15 @@ class Obd2Service @Inject constructor(
         try {
 
             val result = withContext(Dispatchers.IO) {
-                obdConnection?.run(RawObdCommand("01 0D"))
+//                obdConnection?.run(RawObdCommand("01 0D"))
+                obdConnection?.run(SpeedCommand())
             }
 
             Log.d("OBD", "Speed response = $result")
 
-            val raw = result?.value ?: return
+//            val raw = result?.value ?: return
 
-            val speedValue = parseSpeed(raw)
+            val speedValue = parseSpeed(result?.rawResponse?.value ?: "")
 
             if (speedValue != null) {
                 _speed.value = speedValue
