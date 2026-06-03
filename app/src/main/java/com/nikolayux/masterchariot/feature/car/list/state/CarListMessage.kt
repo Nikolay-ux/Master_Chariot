@@ -11,5 +11,7 @@ sealed interface CarListMessage {
     data class MeasureChanged(val measure: Boolean) : CarListMessage
     data object SaveNewCar : CarListMessage
     data object UpdateCar : CarListMessage
-    data object DismissAddCarDialog: CarListMessage
+    data object DismissAddCarDialog : CarListMessage
+    data class LastServiceMileageChanged(val mileage: Int) : CarListMessage
+    data class SelectCar(val id: Int) : CarListMessage
 }

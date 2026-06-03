@@ -9,4 +9,6 @@ interface CarRepository {
     suspend fun updateCar(car: Car)
     suspend fun deleteCar(id: Int)
     suspend fun deleteAllCars()
+    suspend fun getSelectedCar(): Car?
+    suspend fun selectCar(carId: Int)
 }

@@ -10,6 +10,7 @@ data class AddNewCarState(
     val name: String = "",
     val mileage: Int = 0,
     val serviceInterval: Int = 7000,
+    val lastServiceMileage: Int = 0,
     val isUsingMiles: Boolean = false,
     val isSaving: Boolean = false,
     val isEdit: Boolean = false

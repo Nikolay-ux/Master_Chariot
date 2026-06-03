@@ -16,14 +16,36 @@ data class CarEntity(
     val mileage: Int,
     @ColumnInfo("serviceInterval")
     val serviceInterval: Int,
+    @ColumnInfo("lastServiceMileage")
+    val lastServiceMileage: Int = 0,
     @ColumnInfo("isUsingMiles")
     val isUsingMiles: Boolean = false,
+    @ColumnInfo("vin")
+    val vin: String? = null,
+    @ColumnInfo("isSelected")
+    val isSelected: Boolean = false
 ) {
     fun toDomain() = Car(
         id = id,
         name = name,
         mileage = mileage,
         serviceInterval = serviceInterval,
-        isUsingMiles = isUsingMiles
+        lastServiceMileage = lastServiceMileage,
+        isUsingMiles = isUsingMiles,
+        vin = vin,
+        isSelected = isSelected
     )
+
+    companion object {
+        fun fromDomain(car: Car) = CarEntity(
+            id = car.id,
+            name = car.name,
+            mileage = car.mileage,
+            serviceInterval = car.serviceInterval,
+            lastServiceMileage = car.lastServiceMileage,
+            isUsingMiles = car.isUsingMiles,
+            vin = car.vin,
+            isSelected = car.isSelected
+        )
+    }
 }

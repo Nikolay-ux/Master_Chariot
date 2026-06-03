@@ -86,6 +86,7 @@ private fun CarListScreen(
                     car = car,
                     editCarClicked = { onEvent(CarListMessage.Edit(car)) },
                     deleteCarClicked = { onEvent(CarListMessage.Delete(car.id)) },
+                    selectCarClicked = { onEvent(CarListMessage.SelectCar(car.id)) }
                 )
             }
         }

@@ -8,6 +8,10 @@ data class CarUiModel(
     val mileage: Int = 0,
     val serviceInterval: Int = 7000,
     val isUsingMiles: Boolean = false,
+    val lastServiceMileage: Int = 0,
+    val vin: String? = null,
+    val isSelected: Boolean = false,
+    val kmUntilMaintenance: Int = 0
 ) {
     companion object {
         fun fromDomain(car: Car) = with(car) {
@@ -16,7 +20,11 @@ data class CarUiModel(
                 name = name,
                 mileage = mileage,
                 serviceInterval = serviceInterval,
-                isUsingMiles = isUsingMiles
+                isUsingMiles = isUsingMiles,
+                lastServiceMileage = lastServiceMileage,
+                vin = vin,
+                isSelected = isSelected,
+                kmUntilMaintenance = kmUntilMaintenance
             )
         }
     }

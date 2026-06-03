@@ -5,5 +5,11 @@ data class Car(
     val name: String,
     val mileage: Int,
     val serviceInterval: Int,
-    val isUsingMiles: Boolean
-)
+    val lastServiceMileage: Int,
+    val isUsingMiles: Boolean,
+    val vin: String? = null,
+    val isSelected: Boolean = false
+) {
+    val kmUntilMaintenance: Int
+        get() = serviceInterval - (mileage - lastServiceMileage)
+}

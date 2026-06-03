@@ -54,7 +54,8 @@ class CarViewModel @Inject constructor(
                         mileage = message.car.mileage,
                         serviceInterval = message.car.serviceInterval,
                         isUsingMiles = message.car.isUsingMiles,
-                        isEdit = true
+                        isEdit = true,
+                        lastServiceMileage = message.car.lastServiceMileage,
                     )
                 )
             }
@@ -63,7 +64,7 @@ class CarViewModel @Inject constructor(
                 repository.deleteCar(message.id)
             }
 
-            CarListMessage.DeleteAll -> viewModelScope.launch {
+            is CarListMessage.DeleteAll -> viewModelScope.launch {
                 repository.deleteAllCars()
             }
 
@@ -86,14 +87,26 @@ class CarViewModel @Inject constructor(
                 state = state.copy(addNewCarState = state.addNewCarState?.copy(name = message.name))
             }
 
-            CarListMessage.SaveNewCar -> {
+            is CarListMessage.SaveNewCar -> {
                 saveCar()
             }
 
-            CarListMessage.UpdateCar -> {
+            is CarListMessage.UpdateCar -> {
                 updateCar()
             }
 
+            is CarListMessage.LastServiceMileageChanged -> {
+                state = state.copy(
+                    addNewCarState = state.addNewCarState?.copy(
+                        lastServiceMileage = message.mileage
+                    )
+                )
+            }
+            is CarListMessage.SelectCar -> {
+                viewModelScope.launch {
+                    repository.selectCar(message.id)
+                }
+            }
         }
     }
 
@@ -102,7 +115,10 @@ class CarViewModel @Inject constructor(
         name = car.name,
         mileage = car.mileage,
         serviceInterval = car.serviceInterval,
-        isUsingMiles = car.isUsingMiles
+        isUsingMiles = car.isUsingMiles,
+        lastServiceMileage = car.lastServiceMileage,
+        vin = car.vin,
+        isSelected = car.isSelected
     )
 
     fun saveCar() {
@@ -113,7 +129,8 @@ class CarViewModel @Inject constructor(
                 name = state.addNewCarState?.name ?: "",
                 mileage = state.addNewCarState?.mileage ?: 0,
                 serviceInterval = state.addNewCarState?.serviceInterval ?: 7000,
-                isUsingMiles = state.addNewCarState?.isUsingMiles ?: false
+                isUsingMiles = state.addNewCarState?.isUsingMiles ?: false,
+                lastServiceMileage = state.addNewCarState?.lastServiceMileage ?: 0
             )
             repository.addCar(toCar(car))
             state = state.copy(addNewCarState = null)
@@ -129,7 +146,8 @@ class CarViewModel @Inject constructor(
                 name = state.addNewCarState?.name ?: "",
                 mileage = state.addNewCarState?.mileage ?: 0,
                 serviceInterval = state.addNewCarState?.serviceInterval ?: 7000,
-                isUsingMiles = state.addNewCarState?.isUsingMiles ?: false
+                isUsingMiles = state.addNewCarState?.isUsingMiles ?: false,
+                lastServiceMileage = state.addNewCarState?.lastServiceMileage ?: 0
             )
             repository.updateCar(toCar(car))
             state = state.copy(addNewCarState = null)

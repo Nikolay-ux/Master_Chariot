@@ -26,4 +26,20 @@ interface CarDao {
 
     @Query("DELETE FROM cars")
     suspend fun deleteAll()
+
+    @Query("""
+    SELECT * FROM cars
+    WHERE isSelected = 1
+    LIMIT 1
+""")
+    suspend fun getSelectedCar(): CarEntity?
+
+    @Query("""
+    UPDATE cars
+    SET isSelected = 0
+""")
+    suspend fun clearSelection()
+
+    @Query("UPDATE cars SET isSelected = 1 WHERE id = :carId")
+    suspend fun selectCar(carId: Int)
 }

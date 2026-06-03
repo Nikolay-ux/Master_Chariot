@@ -19,24 +19,11 @@ class CarRepositoryImpl(
     }
 
     override suspend fun addCar(car: Car) {
-        val newCar = CarEntity(
-            name = car.name,
-            mileage = car.mileage,
-            serviceInterval = car.serviceInterval,
-            isUsingMiles = car.isUsingMiles
-        )
-        carDao.insert(newCar)
+        carDao.insert(CarEntity.fromDomain(car))
     }
 
     override suspend fun updateCar(car: Car) {
-        val newCar = CarEntity(
-            id = car.id,
-            name = car.name,
-            mileage = car.mileage,
-            serviceInterval = car.serviceInterval,
-            isUsingMiles = car.isUsingMiles
-        )
-        carDao.update(newCar)
+        carDao.update(CarEntity.fromDomain(car))
     }
 
     override suspend fun deleteCar(id: Int) {
@@ -45,5 +32,14 @@ class CarRepositoryImpl(
 
     override suspend fun deleteAllCars() {
         carDao.deleteAll()
+    }
+
+    override suspend fun selectCar(carId: Int) {
+        carDao.clearSelection()
+        carDao.selectCar(carId)
+    }
+
+    override suspend fun getSelectedCar(): Car? {
+        return carDao.getSelectedCar()?.toDomain()
     }
 }
