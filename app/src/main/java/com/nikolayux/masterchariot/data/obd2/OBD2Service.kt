@@ -251,7 +251,7 @@ class Obd2Service @Inject constructor(
                 val response = connection.run(TroubleCodesCommand())
                 val codes = response.value.split(" ").filter { it.isNotBlank() }
                 return@withContext codes.ifEmpty { null }
-            } ?: return@withContext null
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             return@withContext null
@@ -278,11 +278,11 @@ class Obd2Service @Inject constructor(
 
                 readRpm()
 
-                delay(1000)
+//                delay(1000)
 
                 readSpeed()
 
-                delay(1000)
+//                delay(1000)
             }
         }
     }

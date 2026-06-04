@@ -12,6 +12,9 @@ interface CarDao {
     @Query("SELECT * FROM cars ORDER BY id DESC")
     fun getAllCars(): Flow<List<CarEntity>>
 
+    @Query("SELECT * FROM cars WHERE isSelected = 1 LIMIT 1")
+    fun getSelectedCarFlow(): Flow<CarEntity?>
+
     @Query("SELECT * FROM cars WHERE id = :carId")
     suspend fun getCarById(carId: Int): CarEntity?
 

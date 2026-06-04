@@ -32,6 +32,7 @@ import com.nikolayux.masterchariot.Navigation
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.feature.car.list.ui.CarListScreenRoute
 import com.nikolayux.masterchariot.feature.functions.ui.FunctionScreen
+import com.nikolayux.masterchariot.feature.functions.ui.FunctionScreenRoute
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 
 enum class Tab(
@@ -96,7 +97,7 @@ fun MainScreen(
 //        val postsListState = rememberLazyListState()
         Crossfade(modifier = Modifier.fillMaxSize(), targetState = selectedTab) { tab ->
             when (tab) {
-                Tab.Diagnostics -> FunctionScreen(
+                Tab.Diagnostics -> FunctionScreenRoute(
                     contentPadding = PaddingValues(
                         top = insets.calculateTopPadding(),
                         bottom = insets.calculateBottomPadding()

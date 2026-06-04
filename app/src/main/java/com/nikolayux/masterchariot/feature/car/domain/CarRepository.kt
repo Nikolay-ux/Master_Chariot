@@ -12,4 +12,5 @@ interface CarRepository {
     suspend fun getSelectedCar(): Car?
     suspend fun selectCar(carId: Int)
     suspend fun getCarByVin(vin: String): Car?
+    fun getSelectedCarFlow(): Flow<Car?>
 }

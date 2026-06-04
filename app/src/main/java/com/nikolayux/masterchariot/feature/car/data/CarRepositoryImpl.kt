@@ -18,6 +18,11 @@ class CarRepositoryImpl(
         return carDao.getCarById(id)?.toDomain()
     }
 
+    override fun getSelectedCarFlow(): Flow<Car?> {
+        return carDao.getSelectedCarFlow()
+            .map { it?.toDomain() }
+    }
+
     override suspend fun addCar(car: Car) {
         val id = carDao.insert(CarEntity.fromDomain(car)).toInt()
         carDao.clearSelection()
