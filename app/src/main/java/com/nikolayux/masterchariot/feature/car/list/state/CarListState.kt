@@ -2,7 +2,8 @@ package com.nikolayux.masterchariot.feature.car.list.state
 
 data class CarListState(
     val cars: List<CarUiModel> = emptyList(),
-    val addNewCarState: AddNewCarState? = null
+    val addNewCarState: AddNewCarState? = null,
+    val unknownVin: String? = null
 )
 
 data class AddNewCarState(
@@ -12,6 +13,7 @@ data class AddNewCarState(
     val serviceInterval: Int = 7000,
     val lastServiceMileage: Int = 0,
     val isUsingMiles: Boolean = false,
+    val vin: String? = null,
     val isSaving: Boolean = false,
     val isEdit: Boolean = false
 )

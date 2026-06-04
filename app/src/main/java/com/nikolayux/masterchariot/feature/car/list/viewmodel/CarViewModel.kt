@@ -1,13 +1,11 @@
 package com.nikolayux.masterchariot.feature.car.list.viewmodel
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nikolayux.masterchariot.data.local.AppDatabase
-import com.nikolayux.masterchariot.feature.car.data.CarRepositoryImpl
+import com.nikolayux.masterchariot.data.obd2.Obd2Service
 import com.nikolayux.masterchariot.feature.car.domain.Car
 import com.nikolayux.masterchariot.feature.car.domain.CarRepository
 import com.nikolayux.masterchariot.feature.car.list.state.AddNewCarState
@@ -20,10 +18,11 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class CarViewModel @Inject constructor(
-    application: Application
+    private val repository: CarRepository,
+    private val obd2Service: Obd2Service
 ) : ViewModel() {
-    private val repository: CarRepository =
-        CarRepositoryImpl(AppDatabase.getInstance(application).carDao)
+//    private val repository: CarRepository =
+//        CarRepositoryImpl(AppDatabase.getInstance(application).carDao)
 
     var state by mutableStateOf(CarListState())
         private set
@@ -32,6 +31,14 @@ class CarViewModel @Inject constructor(
         viewModelScope.launch {
             repository.cars.collect {
                 state = state.copy(cars = it.map(CarUiModel.Companion::fromDomain))
+            }
+            obd2Service.unknownVin.collect { vin ->
+                if (!vin.isNullOrBlank()) {
+                    state = state.copy(
+                        unknownVin = vin
+                    )
+                }
+
             }
         }
     }
@@ -107,6 +114,27 @@ class CarViewModel @Inject constructor(
                     repository.selectCar(message.id)
                 }
             }
+
+            CarListMessage.CreateCarFromVin -> {
+                val vin = state.unknownVin ?: return
+
+                state = state.copy(
+                    unknownVin = null,
+                    addNewCarState = AddNewCarState(
+                        vin = vin
+                    )
+                )
+            }
+            CarListMessage.DismissUnknownVinDialog -> {
+                state = state.copy(
+                    unknownVin = null
+                )
+            }
+            is CarListMessage.UnknownVinDetected -> {
+                state = state.copy(
+                    unknownVin = message.vin
+                )
+            }
         }
     }
 
@@ -130,7 +158,8 @@ class CarViewModel @Inject constructor(
                 mileage = state.addNewCarState?.mileage ?: 0,
                 serviceInterval = state.addNewCarState?.serviceInterval ?: 7000,
                 isUsingMiles = state.addNewCarState?.isUsingMiles ?: false,
-                lastServiceMileage = state.addNewCarState?.lastServiceMileage ?: 0
+                lastServiceMileage = state.addNewCarState?.lastServiceMileage ?: 0,
+                vin = state.addNewCarState?.vin
             )
             repository.addCar(toCar(car))
             state = state.copy(addNewCarState = null)

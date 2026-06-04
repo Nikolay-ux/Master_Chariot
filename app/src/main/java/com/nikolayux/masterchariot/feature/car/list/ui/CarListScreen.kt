@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -118,6 +119,19 @@ private fun CarListScreen(
             onEditMeasure = { onEvent(CarListMessage.MeasureChanged(it)) }
         )
     }
+
+    state.unknownVin?.let { vin ->
+
+        UnknownVinDialog(
+            vin = vin,
+            onCreate = {
+                onEvent(CarListMessage.CreateCarFromVin)
+            },
+            onDismiss = {
+                onEvent(CarListMessage.DismissUnknownVinDialog)
+            }
+        )
+    }
 }
 
 @Composable
@@ -153,6 +167,14 @@ fun AddCarDialog(
                     value = state.serviceInterval.toString(),
                     onValueChange = { onEditInterval(it.toIntOrNull() ?: 0) }
                 )
+                if (!state.vin.isNullOrBlank()) {
+                    Text("VIN")
+                    OutlinedTextField(
+                        value = state.vin,
+                        onValueChange = {},
+                        readOnly = true
+                    )
+                }
                 Text(stringResource(R.string.dialog_car_measure))
                 SingleChoiceSegmentedButtonRow {
                     options.forEachIndexed { index, label ->
@@ -169,6 +191,7 @@ fun AddCarDialog(
                     }
                 }
 
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
@@ -182,6 +205,51 @@ fun AddCarDialog(
                         enabled = state.name.isNotBlank()
                     ) {
                         Text(stringResource(R.string.dialog_car_save))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun UnknownVinDialog(
+    vin: String,
+    onCreate: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss
+    ) {
+        Card {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Обнаружен новый автомобиль"
+                )
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+                Text(
+                    text = "VIN: $vin"
+                )
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(
+                        onClick = onDismiss
+                    ) {
+                        Text("Отмена")
+                    }
+                    TextButton(
+                        onClick = onCreate
+                    ) {
+                        Text("Создать")
                     }
                 }
             }

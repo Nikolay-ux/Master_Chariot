@@ -8,10 +8,12 @@ import com.github.eltonvs.obd.command.at.SetEchoCommand
 import com.github.eltonvs.obd.command.at.SetHeadersCommand
 import com.github.eltonvs.obd.command.at.SetLineFeedCommand
 import com.github.eltonvs.obd.command.control.TroubleCodesCommand
+import com.github.eltonvs.obd.command.control.VINCommand
 import com.github.eltonvs.obd.command.engine.RPMCommand
 import com.github.eltonvs.obd.command.engine.SpeedCommand
 import com.github.eltonvs.obd.connection.ObdDeviceConnection
 import com.nikolayux.masterchariot.data.bluetooth.BluetoothService
+import com.nikolayux.masterchariot.feature.car.domain.CarRepository
 import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -42,7 +44,8 @@ import kotlinx.coroutines.withContext
 
 @Singleton
 class Obd2Service @Inject constructor(
-    private val bluetoothService: BluetoothService
+    private val bluetoothService: BluetoothService,
+    private val carRepository: CarRepository
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -54,6 +57,12 @@ class Obd2Service @Inject constructor(
 
     private val _rpm = MutableStateFlow(0)
     val rpm: StateFlow<Int> = _rpm.asStateFlow()
+
+    private val _vin = MutableStateFlow<String?>(null)
+    val vin: StateFlow<String?> = _vin.asStateFlow()
+
+    private val _unknownVin = MutableStateFlow<String?>(null)
+    val unknownVin: StateFlow<String?> = _unknownVin.asStateFlow()
 
     init {
         scope.launch {
@@ -83,8 +92,7 @@ class Obd2Service @Inject constructor(
         return@withContext try {
 
             obdConnection = ObdDeviceConnection(
-                socket.inputStream,
-                socket.outputStream
+                socket.inputStream, socket.outputStream
             )
 
             val conn = obdConnection ?: return@withContext false
@@ -111,6 +119,8 @@ class Obd2Service @Inject constructor(
 
             delay(300)
 
+            readVin()
+
 //            val supported = conn.run(AvailablePIDsCommand(
 //                range = AvailablePIDsCommand.AvailablePIDsRanges.PIDS_01_TO_20
 //            ))
@@ -127,9 +137,7 @@ class Obd2Service @Inject constructor(
         } catch (e: Exception) {
 
             Log.e(
-                "OBD",
-                "Initialization failed",
-                e
+                "OBD", "Initialization failed", e
             )
             false
         }
@@ -190,8 +198,7 @@ class Obd2Service @Inject constructor(
     }
 
     private fun parseRpm(raw: String): Int? {
-        val match = Regex("41\\s+0C\\s+([0-9A-F]{2})\\s+([0-9A-F]{2})")
-            .find(raw)
+        val match = Regex("41\\s+0C\\s+([0-9A-F]{2})\\s+([0-9A-F]{2})").find(raw)
 
         if (match != null) {
             val a = match.groupValues[1].toInt(16)
@@ -204,10 +211,38 @@ class Obd2Service @Inject constructor(
     }
 
     private fun parseSpeed(raw: String): Int? {
-        val match = Regex("41\\s+0D\\s+([0-9A-F]{2})")
-            .find(raw)
+        val match = Regex("41\\s+0D\\s+([0-9A-F]{2})").find(raw)
 
         return match?.groupValues?.get(1)?.toInt(16)
+    }
+
+    private suspend fun readVin() {
+        try {
+            val result = withContext(Dispatchers.IO) {
+                obdConnection?.run(VINCommand())
+            }
+            Log.d("OBD", "VIN response = $result")
+
+            val vin = result?.value?.trim()
+            if (!vin.isNullOrBlank()) {
+                _vin.value = vin
+                processVin(vin)
+                Log.d("OBD", "VIN = $vin")
+            }
+        } catch (e: Exception) {
+            Log.e("OBD", "VIN read error", e)
+        }
+    }
+
+    private suspend fun processVin(vin: String) {
+        val car = carRepository.getCarByVin(vin)
+        if (car != null) {
+            carRepository.selectCar(car.id)
+            Log.d("OBD", "Car found: ${car.name}")
+        } else {
+            _unknownVin.value = vin
+            Log.d("OBD", "Unknown VIN: $vin")
+        }
     }
 
     suspend fun readDiagnosticTroubleCodes(): List<String>? = withContext(Dispatchers.IO) {
@@ -239,11 +274,7 @@ class Obd2Service @Inject constructor(
 
         scope.launch {
 
-            while (
-                isPolling &&
-                bluetoothService.connectionState.value ==
-                ConnectionStatus.Connected
-            ) {
+            while (isPolling && bluetoothService.connectionState.value == ConnectionStatus.Connected) {
 
                 readRpm()
 

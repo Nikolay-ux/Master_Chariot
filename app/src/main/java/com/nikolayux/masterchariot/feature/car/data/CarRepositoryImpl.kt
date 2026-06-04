@@ -19,7 +19,9 @@ class CarRepositoryImpl(
     }
 
     override suspend fun addCar(car: Car) {
-        carDao.insert(CarEntity.fromDomain(car))
+        val id = carDao.insert(CarEntity.fromDomain(car)).toInt()
+        carDao.clearSelection()
+        carDao.selectCar(id)
     }
 
     override suspend fun updateCar(car: Car) {
@@ -41,5 +43,9 @@ class CarRepositoryImpl(
 
     override suspend fun getSelectedCar(): Car? {
         return carDao.getSelectedCar()?.toDomain()
+    }
+
+    override suspend fun getCarByVin(vin: String): Car? {
+        return carDao.getCarByVin(vin)?.toDomain()
     }
 }

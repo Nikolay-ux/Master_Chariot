@@ -14,4 +14,7 @@ sealed interface CarListMessage {
     data object DismissAddCarDialog : CarListMessage
     data class LastServiceMileageChanged(val mileage: Int) : CarListMessage
     data class SelectCar(val id: Int) : CarListMessage
+    data class UnknownVinDetected(val vin: String) : CarListMessage
+    data object DismissUnknownVinDialog : CarListMessage
+    data object CreateCarFromVin : CarListMessage
 }

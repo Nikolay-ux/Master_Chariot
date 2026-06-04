@@ -42,4 +42,7 @@ interface CarDao {
 
     @Query("UPDATE cars SET isSelected = 1 WHERE id = :carId")
     suspend fun selectCar(carId: Int)
+
+    @Query("SELECT * FROM cars WHERE vin = :vin LIMIT 1")
+    suspend fun getCarByVin(vin: String): CarEntity?
 }

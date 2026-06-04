@@ -1,5 +1,6 @@
 package com.nikolayux.masterchariot.feature.car.list.ui
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +42,15 @@ fun CarCard(
     deleteCarClicked: () -> Unit = {},
     selectCarClicked: () -> Unit = {},
 ) {
-    Card(modifier = modifier.fillMaxWidth(),
+    Card(modifier = modifier.fillMaxWidth()
+        .border(
+            width = if (car.isSelected) 2.dp else 0.dp,
+            color = if (car.isSelected)
+                Color(0xFF4CAF50)
+            else
+                Color.Transparent,
+            shape = MaterialTheme.shapes.medium
+        ),
         onClick = selectCarClicked) {
         var expandedData by remember { mutableStateOf(false) }
         var expanded by remember { mutableStateOf(false) }
