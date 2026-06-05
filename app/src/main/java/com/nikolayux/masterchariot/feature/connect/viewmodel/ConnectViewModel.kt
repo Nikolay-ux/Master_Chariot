@@ -12,7 +12,6 @@ import com.nikolayux.masterchariot.feature.connect.state.ConnectEffect
 import com.nikolayux.masterchariot.feature.connect.state.ConnectMessage
 import com.nikolayux.masterchariot.feature.connect.state.ConnectState
 import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
-import com.nikolayux.masterchariot.feature.connect.state.ConnectionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -75,17 +74,9 @@ class ConnectViewModel @Inject constructor(
             }
         }
 
-//        viewModelScope.launch {
-//            bluetoothService.pairingRequest.collect { device ->
-//                pendingPairingDevice = device
-//                _effect.send(ConnectEffect.RequestPairingPin(device))
-//            }
-//        }
-
         viewModelScope.launch {
             bluetoothService.pairingCompleted.collect { device ->
                 _state.update { it.copy(connectingDeviceAddress = device.address) }
-//                bluetoothService.proceedWithConnectionAfterPairing(device)
                 bluetoothService.startConnectThread(device)
             }
         }
@@ -97,8 +88,8 @@ class ConnectViewModel @Inject constructor(
             when (message) {
                 is ConnectMessage.ToggleBluetooth -> toggleBluetooth()
                 is ConnectMessage.StartDiscovery -> startDiscovery()
+                is ConnectMessage.StopDiscovery -> stopDiscovery()
                 is ConnectMessage.ConnectToDevice -> connectToDevice(message.device)
-//                is ConnectMessage.SendData -> sendData(message.data)
                 is ConnectMessage.Disconnect -> disconnect()
                 is ConnectMessage.BluetoothEnabled -> {
                     _state.update {
@@ -115,30 +106,6 @@ class ConnectViewModel @Inject constructor(
                         ConnectEffect.ShowToast(R.string.bt_denied)
                     )
                 }
-                is ConnectMessage.SelectConnectionType -> selectConnectionType(message.type)
-            }
-        }
-    }
-
-    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
-    private suspend fun selectConnectionType(type: ConnectionType) {
-        _state.update { it.copy(selectedConnectionType = type) }
-        when (type) {
-            ConnectionType.Wifi -> {
-                _effect.send(ConnectEffect.ShowToast(R.string.wifi_not_implemented))
-            }
-            ConnectionType.Bluetooth -> {
-                if (!bluetoothService.isBluetoothEnabled()) {
-                    _state.update { it.copy(isBluetoothEnableRequested = true) }
-                    onIntent(ConnectMessage.ToggleBluetooth)
-                } else {
-                    _state.update { it.copy(isBluetoothEnabled = true) }
-                    _state.update { it.copy(isBluetoothEnableRequested = false) }
-                    onIntent(ConnectMessage.StartDiscovery)
-                }
-            }
-            ConnectionType.BluetoothLe -> {
-                _effect.send(ConnectEffect.ShowToast(R.string.ble_not_implemented))
             }
         }
     }
@@ -156,9 +123,6 @@ class ConnectViewModel @Inject constructor(
                 return
             }
             _effect.send(ConnectEffect.RequestBluetoothEnable(intent))
-//            if (bluetoothService.isBluetoothEnabled()) {
-//                _state.update { it.copy(isBluetoothEnabled = true) }
-//            }
         } else {
             _state.update { it.copy(isBluetoothEnabled = true) }
         }
@@ -172,6 +136,14 @@ class ConnectViewModel @Inject constructor(
         }
     }
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
+    private fun stopDiscovery() {
+        if (bluetoothService.isBluetoothEnabled()) {
+            _state.update { it.copy(isLoading = false) }
+            bluetoothService.stopDiscovery()
+        }
+    }
+
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun connectToDevice(device: BluetoothDevice) {
         if (_state.value.connectionStatus == ConnectionStatus.Connecting) return
@@ -179,10 +151,6 @@ class ConnectViewModel @Inject constructor(
         Log.d("ConnectViewModel", "здесь попытка подключения")
         bluetoothService.connectToDevice(device)
     }
-
-//    private fun sendData(data: ByteArray) {
-//        bluetoothService.sendData(data)
-//    }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private fun disconnect() {

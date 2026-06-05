@@ -4,7 +4,9 @@ import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothDevice
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
@@ -14,21 +16,28 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bluetooth
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -48,8 +58,8 @@ import com.nikolayux.masterchariot.feature.connect.state.ConnectEffect
 import com.nikolayux.masterchariot.feature.connect.state.ConnectMessage
 import com.nikolayux.masterchariot.feature.connect.state.ConnectState
 import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
-import com.nikolayux.masterchariot.feature.connect.state.ConnectionType
 import com.nikolayux.masterchariot.feature.connect.viewmodel.ConnectViewModel
+import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 import kotlinx.coroutines.flow.StateFlow
 
 
@@ -131,6 +141,7 @@ fun ConnectScreenRoute(
     ConnectScreen(viewModel.state, modifier, viewModel::onIntent)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
 fun ConnectScreen(
@@ -140,111 +151,166 @@ fun ConnectScreen(
 ) {
     val currentState by state.collectAsState()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Row(
-            modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            ConnectionType.entries.forEach { connectionType ->
-                ConnectionTypeChip(
-                    type = connectionType,
-                    isSelected = currentState.selectedConnectionType == connectionType,
-                    onClick = { onIntent(ConnectMessage.SelectConnectionType(connectionType)) }
-                )
-            }
+    LaunchedEffect(currentState.discoveredDevices) {
+        Log.d(
+            "BT_UI",
+            "devices = ${currentState.discoveredDevices.size}"
+        )
+    }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(stringResource(R.string.bt))
+                },
+                navigationIcon = {
+                    val backPressedDispatcherOwner = LocalOnBackPressedDispatcherOwner.current
+                    IconButton(onClick = {
+                        backPressedDispatcherOwner?.onBackPressedDispatcher?.onBackPressed()
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                    }
+                },
+                actions = {
+                    if (currentState.isBluetoothEnabled && !currentState.isLoading) {
+                        TextButton(
+                            onClick = {
+                                onIntent(ConnectMessage.StartDiscovery)
+                            }
+                        ) {
+                            Text(stringResource(R.string.bt_find))
+                        }
+                    } else if (currentState.isBluetoothEnabled) {
+                        TextButton(
+                            onClick = {
+                                onIntent(ConnectMessage.StopDiscovery)
+                            }
+                        ) {
+                            Text(stringResource(R.string.bt_stop_find))
+                        }
+                    }
+                }
+            )
         }
-        when (currentState.selectedConnectionType) {
-            ConnectionType.Wifi -> {
-                Text(stringResource(R.string.wifi_not_implemented))
-            }
+    ) { padding ->
 
-            ConnectionType.Bluetooth -> {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(padding),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 BluetoothContent(
-                    state = currentState, onIntent = onIntent
+                    state = currentState,
+                    onIntent = onIntent,
+                    modifier = Modifier.weight(1f)
                 )
-            }
-
-            ConnectionType.BluetoothLe -> {
-                Text(stringResource(R.string.ble_not_implemented))
             }
         }
     }
 }
 
-@Composable
-fun ConnectionTypeChip(
-    type: ConnectionType, isSelected: Boolean, onClick: () -> Unit
-) {
-    FilterChip(
-        selected = isSelected,
-        onClick = onClick,
-        label = { Text(type.name) },
-        modifier = Modifier,
-        leadingIcon = if (isSelected) {
-            {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-        } else null)
-}
-
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
 fun BluetoothContent(
-    state: ConnectState, onIntent: (ConnectMessage) -> Unit
+    state: ConnectState,
+    modifier: Modifier = Modifier,
+    onIntent: (ConnectMessage) -> Unit
 ) {
     Column(
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(50)
         ) {
-            Text(
-                text = if (state.isBluetoothEnabled) {
-                    stringResource(R.string.bt_enabled)
-                } else stringResource(R.string.bt_disabled),
-                color = if (state.isBluetoothEnabled) {
-                    MaterialTheme.colorScheme.primary
-                } else MaterialTheme.colorScheme.error
-            )
-            if (!state.isBluetoothEnabled && !state.isBluetoothEnableRequested) {
-                Button(onClick = { onIntent(ConnectMessage.ToggleBluetooth) }) {
-                    Text(stringResource(R.string.bt_enable))
-                }
-            }
-        }
-
-        if (state.isLoading) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        }
-
-        if (state.isBluetoothEnabled) {
-            if (state.discoveredDevices.isEmpty() && !state.isLoading) {
-                Text(stringResource(R.string.bt_not_found))
-                Button(onClick = { onIntent(ConnectMessage.StartDiscovery) }) {
-                    Text(stringResource(R.string.bt_search))
-                }
-            } else {
-                LazyColumn {
-                    items(state.discoveredDevices) { device ->
-                        DeviceItem(
-                            device = device,
-                            isConnecting = state.connectionStatus == ConnectionStatus.Connecting
-                                    && state.connectingDeviceAddress == device.address,
-                            onClick = { onIntent(ConnectMessage.ConnectToDevice(device)) }
-                        )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp)
+                    .heightIn(min = 48.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text =
+                        if (state.isBluetoothEnabled)
+                            stringResource(R.string.bt_enabled)
+                        else
+                            stringResource(R.string.bt_disabled),
+                    color =
+                        if (state.isBluetoothEnabled)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.error
+                )
+                if (
+                    !state.isBluetoothEnabled &&
+                    !state.isBluetoothEnableRequested
+                ) {
+                    Button(
+                        onClick = {
+                            onIntent(ConnectMessage.ToggleBluetooth)
+                        }
+                    ) {
+                        Text(stringResource(R.string.bt_enable))
                     }
                 }
             }
-        } else if (state.isBluetoothEnableRequested) {
+        }
+
+        if (state.isBluetoothEnableRequested) {
             Text(stringResource(R.string.bt_wait))
+        }
+
+        if (state.isLoading) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        if (state.isBluetoothEnabled) {
+            when {
+                state.isLoading && state.discoveredDevices.isEmpty() -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                state.discoveredDevices.isEmpty() -> {
+                    Row(modifier = modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text(stringResource(R.string.bt_not_found))
+                    }
+                }
+
+                else -> {
+                    LazyColumn {
+                        items(state.discoveredDevices) { device ->
+                            DeviceItem(
+                                device = device,
+                                isConnecting =
+                                    state.connectionStatus == ConnectionStatus.Connecting &&
+                                            state.connectingDeviceAddress == device.address,
+                                onClick = {
+                                    onIntent(
+                                        ConnectMessage.ConnectToDevice(device)
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -268,4 +334,30 @@ fun DeviceItem(
         },
         modifier = Modifier.clickable { onClick() }
     )
+}
+
+@Preview
+@Composable
+private fun ConnectScreenEnabledPreview() {
+    MasterChariotTheme {
+        BluetoothContent(
+            state = ConnectState(
+                isBluetoothEnabled = true
+            ),
+            onIntent = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ConnectScreenDisabledPreview() {
+    MasterChariotTheme {
+        BluetoothContent(
+            state = ConnectState(
+                isBluetoothEnabled = false
+            ),
+            onIntent = {}
+        )
+    }
 }

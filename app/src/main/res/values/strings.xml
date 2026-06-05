@@ -8,9 +8,9 @@
     <string name="unknown">Unknown error</string>
     <string name="wifi_not_implemented">Wi-Fi not yet implemented</string>
     <string name="ble_not_implemented">BluetoothLE not yet implemented</string>
-    <string name="bt_enabled">Bluetooth enabled</string>
-    <string name="bt_disabled">Bluetooth disabled</string>
-    <string name="bt_enable">Enable Bluetooth</string>
+    <string name="bt_enabled">Enabled</string>
+    <string name="bt_disabled">Disabled</string>
+    <string name="bt_enable">Enable</string>
     <string name="bt_not_found">No devices found. Please start searching.</string>
     <string name="bt_search">Find devices</string>
     <string name="bt_wait">Waiting for Bluetooth to turn on</string>
@@ -35,4 +35,8 @@
     <string name="car_speed_miles">mph</string>
     <string name="car_speed_km">km/h</string>
     <string name="car_rpm">rpm</string>
+    <string name="bt_devices">Devices</string>
+    <string name="bt">Bluetooth</string>
+    <string name="bt_find">Find</string>
+    <string name="bt_stop_find">Stop</string>
 </resources>

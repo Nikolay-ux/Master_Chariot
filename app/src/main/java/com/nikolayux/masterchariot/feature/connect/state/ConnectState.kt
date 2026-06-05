@@ -8,7 +8,6 @@ data class ConnectState(
     val connectionStatus: ConnectionStatus = ConnectionStatus.Disconnected,
     val lastReceivedData: ByteArray? = null,
     val errorMessage: String? = null,
-    val selectedConnectionType: ConnectionType = ConnectionType.Bluetooth,
     val isBluetoothEnableRequested: Boolean = false,
     val isLoading: Boolean = false,
     val connectingDeviceAddress: String? = null
@@ -20,20 +19,26 @@ data class ConnectState(
         other as ConnectState
 
         if (isBluetoothEnabled != other.isBluetoothEnabled) return false
+        if (isBluetoothEnableRequested != other.isBluetoothEnableRequested) return false
+        if (isLoading != other.isLoading) return false
         if (discoveredDevices != other.discoveredDevices) return false
         if (connectionStatus != other.connectionStatus) return false
         if (!lastReceivedData.contentEquals(other.lastReceivedData)) return false
         if (errorMessage != other.errorMessage) return false
+        if (connectingDeviceAddress != other.connectingDeviceAddress) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = isBluetoothEnabled.hashCode()
+        result = 31 * result + isBluetoothEnableRequested.hashCode()
+        result = 31 * result + isLoading.hashCode()
         result = 31 * result + discoveredDevices.hashCode()
         result = 31 * result + connectionStatus.hashCode()
         result = 31 * result + (lastReceivedData?.contentHashCode() ?: 0)
         result = 31 * result + (errorMessage?.hashCode() ?: 0)
+        result = 31 * result + (connectingDeviceAddress?.hashCode() ?: 0)
         return result
     }
 }

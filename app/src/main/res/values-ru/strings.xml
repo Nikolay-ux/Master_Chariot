@@ -9,9 +9,9 @@
     <string name="unknown">Неизвестная ошибка</string>
     <string name="wifi_not_implemented">Wi-Fi not yet implemented</string>
     <string name="ble_not_implemented">BluetoothLE not yet implemented</string>
-    <string name="bt_enabled">Bluetooth включен</string>
-    <string name="bt_disabled">Bluetooth выключен</string>
-    <string name="bt_enable">Включить Bluetooth</string>
+    <string name="bt_enabled">Включено</string>
+    <string name="bt_disabled">Выключено</string>
+    <string name="bt_enable">Включить</string>
     <string name="bt_not_found">Устройства не найдены. Начните поиск</string>
     <string name="bt_search">Найти устройства</string>
     <string name="bt_wait">Ожидание включения Bluetooth</string>
@@ -36,4 +36,8 @@
     <string name="car_speed_miles">миль/ч</string>
     <string name="car_speed_km">км/ч</string>
     <string name="car_rpm">об/мин</string>
+    <string name="bt_devices">Устройства</string>
+    <string name="bt">Bluetooth</string>
+    <string name="bt_find">Поиск</string>
+    <string name="bt_stop_find">Стоп</string>
 </resources>
