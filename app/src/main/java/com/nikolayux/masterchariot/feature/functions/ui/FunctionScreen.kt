@@ -57,11 +57,6 @@ fun FunctionScreen(
     onRefreshDtc: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-//    LaunchedEffect(speed, rpm) {
-//        Log.d("FunctionScreen", "Speed: $speed, RPM: $rpm")
-//    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -78,7 +73,7 @@ fun FunctionScreen(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (true) {
+            if (state.isConnected) {
                 Card(
                     modifier = modifier
                         .fillMaxSize()
@@ -170,7 +165,7 @@ fun FunctionScreen(
 
 @Preview
 @Composable
-private fun FunctionScreenPreview() {
+private fun FunctionScreenPreviewConnected() {
     MasterChariotTheme {
         FunctionScreen(
             contentPadding = PaddingValues(
@@ -181,6 +176,31 @@ private fun FunctionScreenPreview() {
                 speed = 87,
                 rpm = 2450,
                 isConnected = true,
+                dtcCodes = listOf(
+                    "P0300",
+                    "P0171"
+                ),
+                isLoadingDtc = false,
+                isUsingMiles = true,
+            ),
+            onRefreshDtc = { },
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun FunctionScreenPreviewDisconnected() {
+    MasterChariotTheme {
+        FunctionScreen(
+            contentPadding = PaddingValues(
+                top = 30.dp,
+                bottom = 100.dp
+            ),
+            FunctionState(
+                speed = 87,
+                rpm = 2450,
+                isConnected = false,
                 dtcCodes = listOf(
                     "P0300",
                     "P0171"

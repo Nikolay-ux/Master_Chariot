@@ -31,7 +31,7 @@
     <string name="menu_car_interval">Maintenance interval</string>
     <string name="menu_car_measure">Measure of distance</string>
     <string name="dtc">DTC</string>
-    <string name="ui_not_connected">Not connected to the scanner</string>
+    <string name="ui_not_connected">Not connected</string>
     <string name="car_speed_miles">mph</string>
     <string name="car_speed_km">km/h</string>
     <string name="car_rpm">rpm</string>

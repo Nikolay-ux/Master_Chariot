@@ -32,7 +32,7 @@
     <string name="menu_car_interval">Интервал ТО</string>
     <string name="menu_car_measure">Мера расстояния</string>
     <string name="dtc">DTC</string>
-    <string name="ui_not_connected">Не подключено к сканеру</string>
+    <string name="ui_not_connected">Не подключено</string>
     <string name="car_speed_miles">миль/ч</string>
     <string name="car_speed_km">км/ч</string>
     <string name="car_rpm">об/мин</string>
