@@ -11,5 +11,5 @@ data class Car(
     val isSelected: Boolean = false
 ) {
     val kmUntilMaintenance: Int
-        get() = serviceInterval - (mileage - lastServiceMileage)
+        get() = maxOf(0, serviceInterval - (mileage - lastServiceMileage))
 }

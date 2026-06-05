@@ -11,5 +11,6 @@ data class FunctionState(
     val isLoadingDtc: Boolean = false,
     val isUsingMiles: Boolean = false,
     val vin: String? = null,
-    val selectedCarName: String? = null
+    val selectedCarName: String? = null,
+    val untilService: Int = 7000
 )

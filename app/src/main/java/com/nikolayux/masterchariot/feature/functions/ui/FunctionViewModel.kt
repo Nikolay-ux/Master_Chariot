@@ -57,7 +57,8 @@ class FunctionViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             isUsingMiles = car?.isUsingMiles ?: false,
-                            selectedCarName = car?.name
+                            selectedCarName = car?.name,
+                            untilService = car?.kmUntilMaintenance ?: 0
                         )
                     }
                 }

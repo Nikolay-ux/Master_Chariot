@@ -40,4 +40,5 @@
     <string name="bt">Bluetooth</string>
     <string name="bt_find">Поиск</string>
     <string name="bt_stop_find">Стоп</string>
+    <string name="until_maintenance">До ТО</string>
 </resources>

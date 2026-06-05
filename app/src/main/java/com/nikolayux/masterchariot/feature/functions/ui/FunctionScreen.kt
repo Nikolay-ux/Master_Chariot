@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -73,7 +74,7 @@ fun FunctionScreen(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (state.isConnected) {
+            if (true) {
                 Card(
                     modifier = modifier
                         .fillMaxSize()
@@ -160,6 +161,40 @@ fun FunctionScreen(
                 )
             }
         }
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .weight(1F)
+        ) {
+            Row(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Button(
+                    onClick = {},
+                    modifier = modifier.fillMaxSize(),
+                    shape = RoundedCornerShape(0),
+                ) {
+                    Card(
+                        modifier = modifier
+                            .fillMaxSize()
+                    ) {
+                        Row(
+                            modifier = modifier
+                                .fillMaxSize(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(stringResource(R.string.until_maintenance) + " ${state.untilService}")
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
 
