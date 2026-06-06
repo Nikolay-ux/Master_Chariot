@@ -5,7 +5,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
@@ -31,7 +31,6 @@ import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.Navigation
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.feature.car.list.ui.CarListScreenRoute
-import com.nikolayux.masterchariot.feature.functions.ui.FunctionScreen
 import com.nikolayux.masterchariot.feature.functions.ui.FunctionScreenRoute
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 
@@ -57,7 +56,7 @@ fun MainScreen(
                 },
                 actions = {
                     IconButton(onClick = { }) {
-                        Icon(Icons.Default.AccountCircle, null)
+                        Icon(Icons.Default.Bluetooth, null)
                     }
                 }
             )
