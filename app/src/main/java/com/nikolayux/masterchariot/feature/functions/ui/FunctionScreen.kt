@@ -32,6 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.nikolayux.masterchariot.Navigation
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 
@@ -40,6 +43,7 @@ fun FunctionScreenRoute(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     viewModel: FunctionViewModel = hiltViewModel(),
+    navController: NavController = rememberNavController()
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -47,7 +51,8 @@ fun FunctionScreenRoute(
         contentPadding = contentPadding,
         modifier = modifier,
         state = state,
-        onRefreshDtc = viewModel::loadDtcCodes
+        onRefreshDtc = viewModel::loadDtcCodes,
+        navController = navController
     )
 }
 
@@ -56,7 +61,8 @@ fun FunctionScreen(
     contentPadding: PaddingValues,
     state: FunctionState,
     onRefreshDtc: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController = rememberNavController()
 ) {
     Column(
         modifier = modifier
@@ -174,7 +180,7 @@ fun FunctionScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 TextButton(
-                    onClick = {},
+                    onClick = { navController.navigate(Navigation.InstrumentPanel) },
                     modifier = modifier.fillMaxSize(),
                     shape = RoundedCornerShape(0),
                 ) {

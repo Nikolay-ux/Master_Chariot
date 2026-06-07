@@ -40,4 +40,5 @@
     <string name="bt_find">Find</string>
     <string name="bt_stop_find">Stop</string>
     <string name="until_maintenance">Until service</string>
+    <string name="instrument_panel">Instrument panel</string>
 </resources>

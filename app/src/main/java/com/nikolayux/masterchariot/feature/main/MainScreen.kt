@@ -46,6 +46,7 @@ enum class Tab(
 @Composable
 fun MainScreen(
     navController: NavController = rememberNavController(),
+    modifier: Modifier
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(Tab.Diagnostics) }
     Scaffold(
@@ -91,20 +92,22 @@ fun MainScreen(
                 Tab.Settings -> {}
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) { insets ->
 //        val postsListState = rememberLazyListState()
-        Crossfade(modifier = Modifier.fillMaxSize(), targetState = selectedTab) { tab ->
+        Crossfade(modifier = modifier.fillMaxSize(), targetState = selectedTab) { tab ->
             when (tab) {
                 Tab.Diagnostics -> FunctionScreenRoute(
+                    modifier = modifier,
                     contentPadding = PaddingValues(
                         top = insets.calculateTopPadding(),
                         bottom = insets.calculateBottomPadding()
                     ),
-//                    navController = navController
+                    navController = navController
                 )
 
                 Tab.Settings -> CarListScreenRoute(
+                    modifier = modifier,
                     contentPadding = PaddingValues(
                         top = insets.calculateTopPadding(),
                         bottom = insets.calculateBottomPadding()
@@ -119,6 +122,6 @@ fun MainScreen(
 @Composable
 fun MainScreenPreview() {
     MasterChariotTheme {
-        MainScreen()
+        MainScreen(modifier = Modifier)
     }
 }

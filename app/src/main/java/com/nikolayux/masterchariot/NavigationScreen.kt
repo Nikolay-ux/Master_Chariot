@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import com.nikolayux.masterchariot.feature.connect.ui.ConnectScreenRoute
 //import androidx.navigation.toRoute
 import com.nikolayux.masterchariot.feature.main.MainScreen
+import com.nikolayux.masterchariot.feature.trip.TripScreenRoute
 import kotlinx.serialization.Serializable
 
 @androidx.annotation.RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])
@@ -26,11 +27,15 @@ fun NavigationScreen(
 
     NavHost(navController = navController, startDestination = Navigation.Main) {
         composable<Navigation.Main> {
-            MainScreen(navController)
+            MainScreen(modifier = Modifier, navController = navController)
         }
 
         composable<Navigation.Connect> {
             ConnectScreenRoute(modifier = Modifier, navController = navController)
+        }
+
+        composable<Navigation.InstrumentPanel> {
+            TripScreenRoute(modifier = Modifier, navController = navController)
         }
     }
 }
@@ -42,4 +47,7 @@ sealed interface Navigation {
 
     @Serializable
     object Connect : Navigation
+
+    @Serializable
+    object InstrumentPanel
 }

@@ -9,8 +9,11 @@ import com.github.eltonvs.obd.command.at.SetHeadersCommand
 import com.github.eltonvs.obd.command.at.SetLineFeedCommand
 import com.github.eltonvs.obd.command.control.TroubleCodesCommand
 import com.github.eltonvs.obd.command.control.VINCommand
+import com.github.eltonvs.obd.command.engine.LoadCommand
+import com.github.eltonvs.obd.command.engine.MassAirFlowCommand
 import com.github.eltonvs.obd.command.engine.RPMCommand
 import com.github.eltonvs.obd.command.engine.SpeedCommand
+import com.github.eltonvs.obd.command.temperature.EngineCoolantTemperatureCommand
 import com.github.eltonvs.obd.connection.ObdDeviceConnection
 import com.nikolayux.masterchariot.data.bluetooth.BluetoothService
 import com.nikolayux.masterchariot.feature.car.domain.CarRepository
@@ -63,6 +66,18 @@ class Obd2Service @Inject constructor(
 
     private val _unknownVin = MutableStateFlow<String?>(null)
     val unknownVin: StateFlow<String?> = _unknownVin.asStateFlow()
+
+    private val _coolantTemp = MutableStateFlow(0)
+    val coolantTemp: StateFlow<Int> = _coolantTemp.asStateFlow()
+
+    private val _engineLoad = MutableStateFlow(0)
+    val engineLoad: StateFlow<Int> = _engineLoad.asStateFlow()
+
+    private val _maf = MutableStateFlow(0f)
+    val maf: StateFlow<Float> = _maf.asStateFlow()
+
+    private val _fuelConsumption = MutableStateFlow(0f)
+    val fuelConsumption: StateFlow<Float> = _fuelConsumption.asStateFlow()
 
     init {
         scope.launch {
@@ -131,54 +146,38 @@ class Obd2Service @Inject constructor(
 //            )
 
             Log.d("OBD", "=== INIT SUCCESS ===")
-
             true
 
         } catch (e: Exception) {
-
-            Log.e(
-                "OBD", "Initialization failed", e
-            )
+            Log.e("OBD", "Initialization failed", e)
             false
         }
     }
 
     private suspend fun readRpm() {
-
         try {
-
             val result = withContext(Dispatchers.IO) {
                 obdConnection?.run(RPMCommand())
 //                obdConnection?.run(RawObdCommand("01 0C"))
             }
-
             Log.d("OBD", "RPM response = $result")
-
 //            val raw = result?.value ?: return
-
             val rpmValue = parseRpm(result?.rawResponse?.value ?: "")
-
             if (rpmValue != null) {
                 _rpm.value = rpmValue
             }
-
             Log.d("OBD", "Parsed RPM = ${_rpm.value}")
-
         } catch (e: Exception) {
-
             Log.e("OBD", "RPM read error", e)
         }
     }
 
     private suspend fun readSpeed() {
-
         try {
-
             val result = withContext(Dispatchers.IO) {
 //                obdConnection?.run(RawObdCommand("01 0D"))
                 obdConnection?.run(SpeedCommand())
             }
-
             Log.d("OBD", "Speed response = $result")
 
 //            val raw = result?.value ?: return
@@ -188,32 +187,143 @@ class Obd2Service @Inject constructor(
             if (speedValue != null) {
                 _speed.value = speedValue
             }
-
             Log.d("OBD", "Parsed Speed = ${_speed.value}")
 
         } catch (e: Exception) {
-
             Log.e("OBD", "Speed read error", e)
         }
     }
 
     private fun parseRpm(raw: String): Int? {
         val match = Regex("41\\s+0C\\s+([0-9A-F]{2})\\s+([0-9A-F]{2})").find(raw)
-
         if (match != null) {
             val a = match.groupValues[1].toInt(16)
             val b = match.groupValues[2].toInt(16)
-
             return ((a * 256) + b) / 4
         }
-
         return null
     }
 
     private fun parseSpeed(raw: String): Int? {
         val match = Regex("41\\s+0D\\s+([0-9A-F]{2})").find(raw)
-
         return match?.groupValues?.get(1)?.toInt(16)
+    }
+
+    private suspend fun readCoolantTemp() {
+        try {
+            val result = withContext(Dispatchers.IO) {
+                obdConnection?.run(EngineCoolantTemperatureCommand())
+            }
+            Log.d("OBD", "Coolant response = $result")
+            val value =
+                parseCoolantTemp(result?.rawResponse?.value ?: "")
+            value?.let {
+                _coolantTemp.value = it
+            }
+        } catch (e: Exception) {
+            Log.e("OBD", "Coolant read error", e)
+        }
+    }
+
+    private fun parseCoolantTemp(raw: String): Int? {
+        val match = Regex("41\\s+05\\s+([0-9A-F]{2})").find(raw)
+        if (match != null) {
+            val a = match.groupValues[1].toInt(16)
+            return a - 40
+        }
+        return null
+    }
+
+    private suspend fun readEngineLoad() {
+        try {
+            val result = withContext(Dispatchers.IO) {
+                obdConnection?.run(LoadCommand())
+            }
+            val value =
+                parseEngineLoad(
+                    result?.rawResponse?.value ?: ""
+                )
+            value?.let {
+                _engineLoad.value = it
+            }
+        } catch (e: Exception) {
+            Log.e("OBD", "Engine load error", e)
+        }
+    }
+
+    private fun parseEngineLoad(raw: String): Int? {
+        val match = Regex("41\\s+04\\s+([0-9A-F]{2})").find(raw)
+        if (match != null) {
+            val a = match.groupValues[1].toInt(16)
+            return (a * 100f / 255f).toInt()
+        }
+        return null
+    }
+
+    private suspend fun readMaf() {
+
+        try {
+
+            val result = withContext(Dispatchers.IO) {
+                obdConnection?.run(MassAirFlowCommand())
+            }
+
+            val mafValue = parseMaf(
+                result?.rawResponse?.value ?: ""
+            )
+
+            if (mafValue != null) {
+
+                _maf.value = mafValue
+
+                _fuelConsumption.value =
+                    calculateFuelConsumption(
+                        maf = mafValue,
+                        speed = _speed.value
+                    )
+            }
+
+        } catch (e: Exception) {
+            Log.e("OBD", "MAF read error", e)
+        }
+    }
+
+    private fun parseMaf(raw: String): Float? {
+        val match = Regex("41\\s+10\\s+([0-9A-F]{2})\\s+([0-9A-F]{2})").find(raw)
+
+        if (match != null) {
+            val a = match.groupValues[1].toInt(16)
+            val b = match.groupValues[2].toInt(16)
+            return ((a * 256) + b) / 100f
+        }
+        return null
+    }
+
+    private fun calculateFuelConsumption(
+        maf: Float,
+        speed: Int
+    ): Float {
+
+        if (maf <= 0f || speed <= 0) {
+            return 0f
+        }
+
+        val fuelRateLitersPerHour =
+            (maf * 3600f) / (14.7f * 745f)
+
+        return (fuelRateLitersPerHour / speed) * 100f
+    }
+
+    private fun updateFuelConsumption() {
+
+        val maf = _maf.value
+        val speed = _speed.value
+
+        _fuelConsumption.value =
+            calculateFuelConsumption(
+                maf = maf,
+                speed = speed
+            )
     }
 
     private suspend fun readVin() {
@@ -267,22 +377,18 @@ class Obd2Service @Inject constructor(
     }
 
     private fun startPolling() {
-
         if (isPolling) return
-
         isPolling = true
 
         scope.launch {
 
             while (isPolling && bluetoothService.connectionState.value == ConnectionStatus.Connected) {
-
                 readRpm()
-
-//                delay(1000)
-
                 readSpeed()
-
-//                delay(1000)
+                readCoolantTemp()
+                readEngineLoad()
+                readMaf()
+                updateFuelConsumption()
             }
         }
     }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.data.bluetooth.BluetoothService
+import com.nikolayux.masterchariot.data.trip.TripTracker
 import com.nikolayux.masterchariot.feature.connect.state.ConnectEffect
 import com.nikolayux.masterchariot.feature.connect.state.ConnectMessage
 import com.nikolayux.masterchariot.feature.connect.state.ConnectState
@@ -24,7 +25,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ConnectViewModel @Inject constructor(
-    private val bluetoothService: BluetoothService
+    private val bluetoothService: BluetoothService,
+    private val tripTracker: TripTracker,
 ) : ViewModel() {
     private val _state = MutableStateFlow(ConnectState())
     val state: StateFlow<ConnectState> = _state.asStateFlow()
@@ -42,16 +44,27 @@ class ConnectViewModel @Inject constructor(
                             if (status in listOf(
                                     ConnectionStatus.Connected,
                                     ConnectionStatus.Disconnected,
-                                    ConnectionStatus.Error)
-                                ) {
+                                    ConnectionStatus.Error
+                                )
+                            ) {
                                 null
                             } else {
                                 it.connectingDeviceAddress
                             }
                     )
                 }
-                if (status == ConnectionStatus.Connected) {
-                    _effect.send(ConnectEffect.Connected)
+                when (status) {
+                    ConnectionStatus.Connected -> {
+                        tripTracker.start()
+                        _effect.send(ConnectEffect.Connected)
+                    }
+
+                    ConnectionStatus.Disconnected,
+                    ConnectionStatus.Error -> {
+                        tripTracker.stop()
+                    }
+
+                    else -> Unit
                 }
             }
         }
@@ -100,6 +113,7 @@ class ConnectViewModel @Inject constructor(
                     }
                     onIntent(ConnectMessage.StartDiscovery)
                 }
+
                 is ConnectMessage.BluetoothEnableDenied -> {
                     _state.update { it.copy(isBluetoothEnableRequested = false) }
                     _effect.send(
