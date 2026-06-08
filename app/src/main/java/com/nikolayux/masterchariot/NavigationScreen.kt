@@ -2,6 +2,8 @@ package com.nikolayux.masterchariot
 
 //import androidx.compose.runtime.LaunchedEffect
 //import androidx.navigation.toRoute
+import android.Manifest
+import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -9,11 +11,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.nikolayux.masterchariot.feature.car.list.ui.CarListScreenRoute
 import com.nikolayux.masterchariot.feature.connect.ui.ConnectScreenRoute
-import com.nikolayux.masterchariot.feature.main.MainScreen
+import com.nikolayux.masterchariot.feature.functions.ui.FunctionScreenRoute
 import com.nikolayux.masterchariot.feature.trip.TripScreenRoute
 import kotlinx.serialization.Serializable
 
-@androidx.annotation.RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])
+@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
 @Composable
 fun NavigationScreen(
     navController: NavHostController,
@@ -28,7 +30,7 @@ fun NavigationScreen(
 
     NavHost(navController = navController, startDestination = Navigation.Main) {
         composable<Navigation.Main> {
-            MainScreen(modifier = Modifier, navController = navController)
+            FunctionScreenRoute(modifier = Modifier, navController = navController)
         }
 
         composable<Navigation.Connect> {

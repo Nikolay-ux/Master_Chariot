@@ -3,7 +3,6 @@ package com.nikolayux.masterchariot.feature.car.list.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -33,6 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.feature.car.list.state.AddNewCarState
 import com.nikolayux.masterchariot.feature.car.list.state.CarListMessage
@@ -46,19 +48,18 @@ import com.nikolayux.masterchariot.feature.car.list.viewmodel.CarViewModel
 @Composable
 fun CarListScreenRoute(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues.Zero,
     viewModel: CarViewModel = hiltViewModel(),
-//    navController: NavController = rememberNavController(),
+    navController: NavController = rememberNavController(),
     listState: LazyListState = rememberLazyListState()
 ) {
-//    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
 //    val context = LocalContext.current
     CarListScreen(
         viewModel.state,
         modifier,
-        contentPadding,
         viewModel::action,
-        listState
+        listState,
+        navController
     )
 }
 
@@ -66,72 +67,77 @@ fun CarListScreenRoute(
 private fun CarListScreen(
     state: CarListState,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues,
     onEvent: (CarListMessage) -> Unit = {},
     listState: LazyListState = rememberLazyListState(),
+    navController: NavController = rememberNavController()
 ) {
 //    val layoutDirection = LocalLayoutDirection.current
-
-    Box(
-        modifier = modifier.fillMaxSize(),
-    ) {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = contentPadding,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            state = listState
+//    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    Scaffold { contentPadding ->
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(contentPadding),
         ) {
-            items(items = state.cars, key = { it.id }) { car ->
-                CarCard(
-                    modifier = Modifier.animateItem(),
-                    car = car,
-                    editCarClicked = { onEvent(CarListMessage.Edit(car)) },
-                    deleteCarClicked = { onEvent(CarListMessage.Delete(car.id)) },
-                    selectCarClicked = { onEvent(CarListMessage.SelectCar(car.id)) }
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+//                contentPadding = contentPadding,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                state = listState
+            ) {
+                items(items = state.cars, key = { it.id }) { car ->
+                    CarCard(
+                        modifier = Modifier.animateItem(),
+                        car = car,
+                        editCarClicked = { onEvent(CarListMessage.Edit(car)) },
+                        deleteCarClicked = { onEvent(CarListMessage.Delete(car.id)) },
+                        selectCarClicked = { onEvent(CarListMessage.SelectCar(car.id)) }
+                    )
+                }
+            }
+            FloatingActionButton(
+                onClick = { onEvent(CarListMessage.AddCar) },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        end = 16.dp,
+                        bottom = 16.dp
+                    )
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = null,
                 )
             }
         }
-        FloatingActionButton(
-            onClick = { onEvent(CarListMessage.AddCar) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(
-                    end = 16.dp,
-                    bottom = contentPadding.calculateBottomPadding() + 16.dp
-                )
-        ) {
-            Icon(
-                Icons.Default.Add,
-                contentDescription = null,
+
+        state.addNewCarState?.let { addNewCarState ->
+            AddCarDialog(
+                addNewCarState,
+                onDismissRequest = { onEvent(CarListMessage.DismissAddCarDialog) },
+                onCreate = { onEvent(CarListMessage.SaveNewCar) },
+                onUpdate = { onEvent(CarListMessage.UpdateCar)},
+                onEditName = { onEvent(CarListMessage.NameChanged(it)) },
+                onEditMileage = { onEvent(CarListMessage.MileageChanged(it)) },
+                onEditInterval = { onEvent(CarListMessage.IntervalChanged(it)) },
+                onEditMeasure = { onEvent(CarListMessage.MeasureChanged(it)) }
+            )
+        }
+
+        state.unknownVin?.let { vin ->
+
+            UnknownVinDialog(
+                vin = vin,
+                onCreate = {
+                    onEvent(CarListMessage.CreateCarFromVin)
+                },
+                onDismiss = {
+                    onEvent(CarListMessage.DismissUnknownVinDialog)
+                }
             )
         }
     }
 
-    state.addNewCarState?.let { addNewCarState ->
-        AddCarDialog(
-            addNewCarState,
-            onDismissRequest = { onEvent(CarListMessage.DismissAddCarDialog) },
-            onCreate = { onEvent(CarListMessage.SaveNewCar) },
-            onUpdate = { onEvent(CarListMessage.UpdateCar)},
-            onEditName = { onEvent(CarListMessage.NameChanged(it)) },
-            onEditMileage = { onEvent(CarListMessage.MileageChanged(it)) },
-            onEditInterval = { onEvent(CarListMessage.IntervalChanged(it)) },
-            onEditMeasure = { onEvent(CarListMessage.MeasureChanged(it)) }
-        )
-    }
-
-    state.unknownVin?.let { vin ->
-
-        UnknownVinDialog(
-            vin = vin,
-            onCreate = {
-                onEvent(CarListMessage.CreateCarFromVin)
-            },
-            onDismiss = {
-                onEvent(CarListMessage.DismissUnknownVinDialog)
-            }
-        )
-    }
 }
 
 @Composable
