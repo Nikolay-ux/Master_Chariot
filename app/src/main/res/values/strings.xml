@@ -24,7 +24,7 @@
     <string name="dialog_car_measure">Measure of distance</string>
     <string name="dialog_car_cancel">Cancel</string>
     <string name="dialog_car_save">Save</string>
-    <string name="car_measure_miles">Miles</string>
+    <string name="car_measure_miles">miles</string>
     <string name="car_measure_km">km</string>
     <string name="menu_car_name">Name</string>
     <string name="menu_car_mileage">Mileage</string>

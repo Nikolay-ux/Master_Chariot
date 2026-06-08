@@ -1,13 +1,14 @@
 package com.nikolayux.masterchariot
 
+//import androidx.compose.runtime.LaunchedEffect
+//import androidx.navigation.toRoute
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-//import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.nikolayux.masterchariot.feature.car.list.ui.CarListScreenRoute
 import com.nikolayux.masterchariot.feature.connect.ui.ConnectScreenRoute
-//import androidx.navigation.toRoute
 import com.nikolayux.masterchariot.feature.main.MainScreen
 import com.nikolayux.masterchariot.feature.trip.TripScreenRoute
 import kotlinx.serialization.Serializable
@@ -37,6 +38,12 @@ fun NavigationScreen(
         composable<Navigation.InstrumentPanel> {
             TripScreenRoute(modifier = Modifier, navController = navController)
         }
+
+        composable<Navigation.Settings> {
+            CarListScreenRoute(
+                modifier = Modifier, navController = navController
+            )
+        }
     }
 }
 
@@ -50,4 +57,7 @@ sealed interface Navigation {
 
     @Serializable
     object InstrumentPanel
+
+    @Serializable
+    object Settings
 }

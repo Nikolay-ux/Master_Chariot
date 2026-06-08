@@ -1,25 +1,29 @@
 package com.nikolayux.masterchariot.feature.functions.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.automirrored.filled.AccessibleForward
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,7 +40,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.Navigation
 import com.nikolayux.masterchariot.R
+import com.nikolayux.masterchariot.ui.theme.Black
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
+import com.nikolayux.masterchariot.ui.theme.White
 
 @Composable
 fun FunctionScreenRoute(
@@ -70,133 +76,246 @@ fun FunctionScreen(
             .padding(contentPadding)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (true) {
+        if (!state.isConnected) {
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp),
+            ) {
                 Card(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .weight(1F),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    shape = RoundedCornerShape(50),
-
-                    ) {
-                    Box(
-                        modifier = modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                    modifier = modifier.fillMaxSize(),
+                    colors = CardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary,
+                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        disabledContentColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Row(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 48.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text("${state.speed}", textAlign = TextAlign.Center)
+                            modifier = modifier
+                                .fillMaxWidth()
+                        )
+                        {
                             Text(
-                                if (state.isUsingMiles) {
-                                    stringResource(R.string.car_speed_miles)
-                                } else stringResource(R.string.car_speed_km)
+                                modifier = modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                                text = stringResource(R.string.ui_not_connected),
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
-
                     }
                 }
-                Card(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .weight(1F),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    shape = RoundedCornerShape(50)
+            }
+        }
+        Card(
+            modifier = modifier
+                .weight(2.5F)
+                .padding(start = 8.dp, end = 8.dp),
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                disabledContentColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Column(
+                modifier = modifier,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Spacer(modifier.weight(1F))
+                Column(
+                    modifier = modifier.weight(2F),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(
-                        modifier = modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        Text(
+                            "${state.speed}",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.displayLarge
+                        )
+                        Text(
+                            if (state.isUsingMiles) {
+                                stringResource(R.string.car_speed_miles)
+                            } else stringResource(R.string.car_speed_km),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    Spacer(modifier.weight(3F))
+                    Row(
+                        modifier = modifier.weight(2F)
+//                        .fillMaxSize()
+                        .padding(start = 16.dp, end = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { navController.navigate(Navigation.InstrumentPanel) },
+                            modifier = modifier
+                                .weight(1F)
+//                                .fillMaxSize()
                         ) {
-                            Text("${state.rpm} ")
-                            Text(stringResource(R.string.car_rpm))
-                        }
-                    }
-                }
-                Card(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .weight(1F),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    shape = RoundedCornerShape(50)
-                ) {
-                    Box(
-                        modifier = modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                            Row(
+                                modifier = modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        "${state.rpm}",
+                                        style = MaterialTheme.typography.headlineSmall
+                                    )
+                                    Text(
+                                        stringResource(R.string.car_rpm),
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
 
-                    ) {
-                        Column(
-                            modifier = modifier.padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                            }
+                        }
+                        OutlinedButton(
+                            onClick = onRefreshDtc,
+                            modifier = modifier
+                                .weight(1F)
+//                                .fillMaxSize(),
                         ) {
                             if (state.isLoadingDtc) {
                                 CircularProgressIndicator()
                             } else {
-                                Text(
-                                    "${state.dtcCodes.size}"
-                                )
-                            }
-                            Text(
-                                text = stringResource(R.string.dtc)
-                            )
-                            IconButton(onClick = onRefreshDtc) {
-                                Icon(
-                                    Icons.Default.Refresh,
-                                    contentDescription = null
-                                )
+                                Row(
+                                    modifier = modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text(
+                                            "${state.dtcCodes.size}",
+                                            style = MaterialTheme.typography.headlineSmall
+                                        )
+                                        Text(
+                                            stringResource(R.string.dtc),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            } else {
-                Text(
-                    stringResource(R.string.ui_not_connected),
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                Spacer(modifier.weight(1F))
             }
         }
-        Column(
+
+        Card(
             modifier = modifier
-                .fillMaxSize()
-                .weight(1F)
+                .padding(start = 8.dp, end = 8.dp)
+                .weight(1F),
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                disabledContentColor = MaterialTheme.colorScheme.primary
+            )
         ) {
-            Row(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                TextButton(
-                    onClick = { navController.navigate(Navigation.InstrumentPanel) },
-                    modifier = modifier.fillMaxSize(),
-                    shape = RoundedCornerShape(0),
+            Column(modifier = modifier
+                .padding(top = 32.dp, bottom = 32.dp)) {
+                Row(
+                    modifier = modifier
+                        .weight(2F),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Card(
-                        modifier = modifier
-                            .fillMaxSize()
+                    TextButton(
+                        onClick = { navController.navigate(Navigation.InstrumentPanel) },
+//                        modifier = modifier.fillMaxSize(),
+                        shape = RoundedCornerShape(0),
                     ) {
                         Row(
-                            modifier = modifier
-                                .fillMaxSize(),
+                            modifier = modifier.fillMaxSize(),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text(stringResource(R.string.until_maintenance) + " ${state.untilService}")
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(stringResource(R.string.until_maintenance), style = MaterialTheme.typography.bodyMedium)
+                                Row(verticalAlignment = Alignment.Bottom,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Text("${state.untilService}", style = MaterialTheme.typography.displayMedium)
+                                    Text(if (state.isUsingMiles) {
+                                        stringResource(R.string.car_measure_miles)
+                                    } else stringResource(R.string.car_measure_km), style = MaterialTheme.typography.displayMedium)
+
+                                }
+
+                            }
                         }
                     }
+                }
+                Row(
+                    modifier = modifier
+                        .padding(start = 8.dp, end = 8.dp)
+                        .weight(1F),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            modifier = modifier.weight(4F),
+                            onClick = { navController.navigate(Navigation.Connect) },
+                            shape = RoundedCornerShape(16)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(Icons.AutoMirrored.Filled.AccessibleForward, null)
+//                                Icon(Icons.Default.LeakAdd, null)
+                                Text(
+                                    stringResource(R.string.connect),
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
+                            }
+                        }
+//                        Column(
+//                            modifier = modifier.widthIn(min = 72.dp)
+//                        ) {
+//
+//                        }
+                        IconButton(
+                            modifier = modifier
+                                .weight(1F),
+                            onClick = {
+                                navController.navigate(Navigation.Settings)
+                            },
+                            shape = RoundedCornerShape(16),
+                            colors = IconButtonColors(
+                                containerColor = Black,
+                                contentColor = White,
+                                disabledContainerColor = Black,
+                                disabledContentColor = White
+                            )
+                        ) {
+                            Icon(
+                                Icons.Outlined.Settings,
+                                null
+                            )
+                        }
+                    }
+
                 }
             }
         }
@@ -229,7 +348,7 @@ private fun FunctionScreenPreviewConnected() {
     }
 }
 
-@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun FunctionScreenPreviewDisconnected() {
     MasterChariotTheme {
@@ -247,7 +366,7 @@ private fun FunctionScreenPreviewDisconnected() {
                     "P0171"
                 ),
                 isLoadingDtc = false,
-                isUsingMiles = true,
+                isUsingMiles = false,
             ),
             onRefreshDtc = { },
         )

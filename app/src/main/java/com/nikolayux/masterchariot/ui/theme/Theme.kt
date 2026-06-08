@@ -1,6 +1,5 @@
 package com.nikolayux.masterchariot.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -12,16 +11,70 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = White,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    background = Black,
+
+
+//    primary: Color = ColorDarkTokens.Primary,
+//    onPrimary: Color = ColorDarkTokens.OnPrimary,
+    primaryContainer = Grey2,
+//    onPrimaryContainer: Color = ColorDarkTokens.OnPrimaryContai…,
+//    inversePrimary: Color = ColorDarkTokens.InversePrimary,
+//    secondary: Color = ColorDarkTokens.Secondary,
+//    onSecondary: Color = ColorDarkTokens.OnSecondary,
+    secondaryContainer = Grey1,
+//    onSecondaryContainer: Color = ColorDarkTokens.OnSecondaryCont…,
+//    tertiary: Color = ColorDarkTokens.Tertiary,
+//    onTertiary: Color = ColorDarkTokens.OnTertiary,
+//    tertiaryContainer: Color = ColorDarkTokens.TertiaryContain…,
+//    onTertiaryContainer: Color = ColorDarkTokens.OnTertiaryConta…,
+//    background: Color = ColorDarkTokens.Background,
+//    onBackground: Color = ColorDarkTokens.OnBackground,
+//    surface: Color = ColorDarkTokens.Surface,
+//    onSurface: Color = ColorDarkTokens.OnSurface,
+//    surfaceVariant: Color = ColorDarkTokens.SurfaceVariant,
+//    onSurfaceVariant: Color = ColorDarkTokens.OnSurfaceVariant,
+//    surfaceTint: Color = primary,
+//    inverseSurface: Color = ColorDarkTokens.InverseSurface,
+//    inverseOnSurface: Color = ColorDarkTokens.InverseOnSurface,
+//    error: Color = ColorDarkTokens.Error,
+//    onError: Color = ColorDarkTokens.OnError,
+//    errorContainer: Color = ColorDarkTokens.ErrorContainer,
+//    onErrorContainer: Color = ColorDarkTokens.OnErrorContainer,
+    outline = White,
+//    outlineVariant: Color = ColorDarkTokens.OutlineVariant,
+//    scrim: Color = ColorDarkTokens.Scrim,
+//    surfaceBright: Color = ColorDarkTokens.SurfaceBright,
+//    surfaceContainer: Color = ColorDarkTokens.SurfaceContainer,
+//    surfaceContainerHigh: Color = ColorDarkTokens.SurfaceContaine…,
+//    surfaceContainerHighest: Color = ColorDarkTokens.SurfaceContaine…,
+//    surfaceContainerLow: Color = ColorDarkTokens.SurfaceContaine…,
+//    surfaceContainerLowest: Color = ColorDarkTokens.SurfaceContaine…,
+//    surfaceDim: Color = ColorDarkTokens.SurfaceDim,
+//    primaryFixed: Color = ColorDarkTokens.PrimaryFixed,
+//    primaryFixedDim: Color = ColorDarkTokens.PrimaryFixedDim,
+//    onPrimaryFixed: Color = ColorDarkTokens.OnPrimaryFixed,
+//    onPrimaryFixedVariant: Color = ColorDarkTokens.OnPrimaryFixedV…,
+//    secondaryFixed: Color = ColorDarkTokens.SecondaryFixed,
+//    secondaryFixedDim: Color = ColorDarkTokens.SecondaryFixedD…,
+//    onSecondaryFixed: Color = ColorDarkTokens.OnSecondaryFixed,
+//    onSecondaryFixedVariant: Color = ColorDarkTokens.OnSecondaryFixe…,
+//    tertiaryFixed: Color = ColorDarkTokens.TertiaryFixed,
+//    tertiaryFixedDim: Color = ColorDarkTokens.TertiaryFixedDim,
+//    onTertiaryFixed: Color = ColorDarkTokens.OnTertiaryFixed,
+//    onTertiaryFixedVariant: Color = ColorDarkTokens.OnTertiaryFixed…
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = Black,
     secondary = PurpleGrey40,
-    tertiary = Pink40
-
+    tertiary = Pink40,
+    background = White,
+    outline = DirtWhite2,
+    primaryContainer = LightWhite,
+    secondaryContainer = DirtWhite,
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -37,7 +90,7 @@ private val LightColorScheme = lightColorScheme(
 fun MasterChariotTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
