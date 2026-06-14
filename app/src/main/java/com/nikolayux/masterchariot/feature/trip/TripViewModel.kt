@@ -3,17 +3,21 @@ package com.nikolayux.masterchariot.feature.trip
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nikolayux.masterchariot.data.bluetooth.BluetoothService
 import com.nikolayux.masterchariot.data.trip.TripTracker
+import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @SuppressLint("DefaultLocale")
 @HiltViewModel
 class TripViewModel @Inject constructor(
-    private val tripTracker: TripTracker
+    private val tripTracker: TripTracker,
+    private val bluetoothService: BluetoothService
 ) : ViewModel() {
 
     private val _state =
@@ -30,8 +34,8 @@ class TripViewModel @Inject constructor(
 
             tripTracker.tripState.collect { trip ->
 
-                _state.value =
-                    TripScreenState(
+                _state.update { currentState ->
+                    currentState.copy(
 
                         distanceKm =
                             String.format(
@@ -62,6 +66,13 @@ class TripViewModel @Inject constructor(
                                 trip.fuelConsumedLiters
                             )
                     )
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            bluetoothService.connectionState.collect { status ->
+                _state.update { it.copy(isConnected = status == ConnectionStatus.Connected) }
             }
         }
     }

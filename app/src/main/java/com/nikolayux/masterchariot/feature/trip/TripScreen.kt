@@ -86,6 +86,11 @@ fun TripScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            if (!currentState.isConnected) {
+                item {
+                    TripStatusCard()
+                }
+            }
             item {
                 TripMainDistanceCard(state = currentState)
             }
@@ -132,6 +137,28 @@ fun TripScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TripStatusCard(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            text = stringResource(R.string.ui_not_connected),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
     }
 }
 
