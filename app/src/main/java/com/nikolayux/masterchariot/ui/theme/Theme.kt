@@ -8,7 +8,10 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
     primary = White,
@@ -44,7 +47,7 @@ private val DarkColorScheme = darkColorScheme(
 //    errorContainer: Color = ColorDarkTokens.ErrorContainer,
 //    onErrorContainer: Color = ColorDarkTokens.OnErrorContainer,
     outline = White,
-//    outlineVariant: Color = ColorDarkTokens.OutlineVariant,
+    outlineVariant = Grey5,
 //    scrim: Color = ColorDarkTokens.Scrim,
 //    surfaceBright: Color = ColorDarkTokens.SurfaceBright,
 //    surfaceContainer: Color = ColorDarkTokens.SurfaceContainer,
@@ -72,9 +75,10 @@ private val LightColorScheme = lightColorScheme(
     secondary = PurpleGrey40,
     tertiary = Pink40,
     background = White,
-    outline = DirtWhite2,
+    outline = White,
     primaryContainer = LightWhite,
     secondaryContainer = DirtWhite,
+    outlineVariant = Grey5,
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -101,6 +105,15 @@ fun MasterChariotTheme(
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as? android.app.Activity)?.window ?: return@SideEffect
+            WindowCompat.setDecorFitsSystemWindows(window, true)
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
     }
 
     MaterialTheme(

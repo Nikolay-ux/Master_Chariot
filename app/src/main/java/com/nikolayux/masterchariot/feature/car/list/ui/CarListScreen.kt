@@ -1,34 +1,53 @@
 package com.nikolayux.masterchariot.feature.car.list.ui
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -40,26 +59,30 @@ import com.nikolayux.masterchariot.feature.car.list.state.AddNewCarState
 import com.nikolayux.masterchariot.feature.car.list.state.CarListMessage
 import com.nikolayux.masterchariot.feature.car.list.state.CarListState
 import com.nikolayux.masterchariot.feature.car.list.viewmodel.CarViewModel
+import com.nikolayux.masterchariot.ui.theme.Black
+import com.nikolayux.masterchariot.ui.theme.White
 
-/**
- * На экране мы должны разместить список автомобилей с использованием реализованных функций
- * для работы с базой данных
- */
+private val SettingsScreenPadding = 16.dp
+private val SettingsSectionSpacing = 20.dp
+private val SettingsControlHeight = 48.dp
+private val NotificationsToggleWidth = 128.dp
+
 @Composable
 fun CarListScreenRoute(
     modifier: Modifier = Modifier,
     viewModel: CarViewModel = hiltViewModel(),
     navController: NavController = rememberNavController(),
-    listState: LazyListState = rememberLazyListState()
+    listState: LazyListState = rememberLazyListState(),
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit
 ) {
-
-//    val context = LocalContext.current
     CarListScreen(
-        viewModel.state,
-        modifier,
-        viewModel::action,
-        listState,
-        navController
+        state = viewModel.state,
+        modifier = modifier,
+        onEvent = viewModel::action,
+        listState = listState,
+        isDarkTheme = isDarkTheme,
+        onToggleTheme = onToggleTheme
     )
 }
 
@@ -69,32 +92,79 @@ private fun CarListScreen(
     modifier: Modifier = Modifier,
     onEvent: (CarListMessage) -> Unit = {},
     listState: LazyListState = rememberLazyListState(),
-    navController: NavController = rememberNavController()
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit
 ) {
-//    val layoutDirection = LocalLayoutDirection.current
-//    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    var notificationsEnabled by rememberSaveable { mutableStateOf(false) }
+
     Scaffold { contentPadding ->
         Box(
             modifier = modifier
                 .fillMaxSize()
-                .padding(contentPadding),
+                .padding(contentPadding)
         ) {
             LazyColumn(
-                modifier = modifier.fillMaxSize(),
-//                contentPadding = contentPadding,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = SettingsScreenPadding,
+                    top = SettingsScreenPadding,
+                    end = SettingsScreenPadding,
+                    bottom = 96.dp
+                ),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 state = listState
             ) {
-                items(items = state.cars, key = { it.id }) { car ->
-                    CarCard(
-                        modifier = Modifier.animateItem(),
-                        car = car,
-                        editCarClicked = { onEvent(CarListMessage.Edit(car)) },
-                        deleteCarClicked = { onEvent(CarListMessage.Delete(car.id)) },
-                        selectCarClicked = { onEvent(CarListMessage.SelectCar(car.id)) }
-                    )
+                item {
+                    SettingsHeader(text = stringResource(R.string.settings_my_cars))
+                }
+
+                if (state.cars.isEmpty()) {
+                    item {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            text = stringResource(R.string.settings_cars_empty),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                } else {
+                    items(items = state.cars, key = { it.id }) { car ->
+                        CarCard(
+                            modifier = Modifier.animateItem(),
+                            car = car,
+                            editCarClicked = { onEvent(CarListMessage.Edit(car)) },
+                            deleteCarClicked = { onEvent(CarListMessage.Delete(car.id)) },
+                            selectCarClicked = { onEvent(CarListMessage.SelectCar(car.id)) }
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(SettingsSectionSpacing))
+                    SettingsActionRow(
+                        title = stringResource(R.string.settings_app_theme)
+                    ) {
+                        ThemeModeButton(
+                            isDarkTheme = isDarkTheme,
+                            onClick = onToggleTheme
+                        )
+                    }
+                }
+
+                item {
+                    SettingsActionRow(
+                        title = stringResource(R.string.settings_notifications)
+                    ) {
+                        NotificationsToggleButton(
+                            enabled = notificationsEnabled,
+                            onToggle = { notificationsEnabled = !notificationsEnabled }
+                        )
+                    }
                 }
             }
+
             FloatingActionButton(
                 onClick = { onEvent(CarListMessage.AddCar) },
                 modifier = Modifier
@@ -116,7 +186,7 @@ private fun CarListScreen(
                 addNewCarState,
                 onDismissRequest = { onEvent(CarListMessage.DismissAddCarDialog) },
                 onCreate = { onEvent(CarListMessage.SaveNewCar) },
-                onUpdate = { onEvent(CarListMessage.UpdateCar)},
+                onUpdate = { onEvent(CarListMessage.UpdateCar) },
                 onEditName = { onEvent(CarListMessage.NameChanged(it)) },
                 onEditMileage = { onEvent(CarListMessage.MileageChanged(it)) },
                 onEditInterval = { onEvent(CarListMessage.IntervalChanged(it)) },
@@ -125,19 +195,171 @@ private fun CarListScreen(
         }
 
         state.unknownVin?.let { vin ->
-
             UnknownVinDialog(
                 vin = vin,
-                onCreate = {
-                    onEvent(CarListMessage.CreateCarFromVin)
-                },
-                onDismiss = {
-                    onEvent(CarListMessage.DismissUnknownVinDialog)
-                }
+                onCreate = { onEvent(CarListMessage.CreateCarFromVin) },
+                onDismiss = { onEvent(CarListMessage.DismissUnknownVinDialog) }
             )
         }
     }
+}
 
+@Composable
+private fun SettingsHeader(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp, bottom = 8.dp),
+        text = text,
+        style = MaterialTheme.typography.headlineMedium
+    )
+}
+
+@Composable
+private fun SettingsActionRow(
+    title: String,
+    modifier: Modifier = Modifier,
+    action: @Composable () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 64.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = title,
+            style = MaterialTheme.typography.headlineMedium
+        )
+        action()
+    }
+}
+
+@Composable
+private fun ThemeModeButton(
+    isDarkTheme: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val targetIsDark = !isDarkTheme
+    val containerColor = if (targetIsDark) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.primaryContainer
+    }
+    val contentColor = if (targetIsDark) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
+
+    Surface(
+        modifier = modifier
+            .height(SettingsControlHeight)
+            .width(SettingsControlHeight),
+        shape = RoundedCornerShape(16.dp),
+        color = containerColor,
+        contentColor = contentColor
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = if (targetIsDark) Icons.Default.DarkMode else Icons.Default.LightMode,
+                contentDescription = stringResource(R.string.settings_app_theme)
+            )
+        }
+    }
+}
+
+@Composable
+private fun NotificationsToggleButton(
+    enabled: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .width(NotificationsToggleWidth)
+            .height(SettingsControlHeight),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.primary,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(onClick = onToggle)
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NotificationToggleSegment(
+                selected = !enabled,
+                label = stringResource(R.string.settings_notifications_off),
+                icon = Icons.Default.NotificationsOff,
+                modifier = Modifier.weight(1.2f),
+                selectedColor = Black,
+                selectedContentColor = White
+            )
+            NotificationToggleSegment(
+                selected = enabled,
+                label = stringResource(R.string.settings_notifications_on),
+                icon = Icons.Default.Notifications,
+                modifier = Modifier.weight(1f),
+                selectedColor = MaterialTheme.colorScheme.secondary,
+                selectedContentColor = MaterialTheme.colorScheme.background
+            )
+        }
+    }
+}
+
+@Composable
+private fun NotificationToggleSegment(
+    selected: Boolean,
+    label: String,
+    icon: ImageVector,
+    selectedColor: Color,
+    selectedContentColor: Color,
+    modifier: Modifier = Modifier
+) {
+    val containerColor = if (selected) selectedColor else Color.Transparent
+    val contentColor = if (selected) selectedContentColor else MaterialTheme.colorScheme.primary
+
+    Surface(
+        modifier = modifier.fillMaxHeight(),
+        shape = RoundedCornerShape(12.dp),
+        color = containerColor,
+        contentColor = contentColor
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                modifier = Modifier.size(18.dp),
+                imageVector = icon,
+                contentDescription = null
+            )
+            Text(
+                modifier = Modifier.padding(start = 4.dp),
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1
+            )
+        }
+    }
 }
 
 @Composable

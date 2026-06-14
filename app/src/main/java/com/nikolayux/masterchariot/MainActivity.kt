@@ -4,6 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
@@ -34,12 +39,17 @@ class MainActivity : ComponentActivity() {
         handleIntent(intent)
 
         setContent {
-            MasterChariotTheme {
+            val systemDarkTheme = isSystemInDarkTheme()
+            var isDarkTheme by rememberSaveable { mutableStateOf(systemDarkTheme) }
+
+            MasterChariotTheme(darkTheme = isDarkTheme) {
                 val navController = rememberNavController()
                 this@MainActivity.navController = navController
 
                 NavigationScreen(
                     navController = navController,
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = { isDarkTheme = !isDarkTheme }
                 )
             }
         }

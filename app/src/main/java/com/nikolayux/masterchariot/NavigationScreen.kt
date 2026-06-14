@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.nikolayux.masterchariot.feature.car.list.ui.CarListScreenRoute
 import com.nikolayux.masterchariot.feature.connect.ui.ConnectScreenRoute
+import com.nikolayux.masterchariot.feature.functions.ui.DtcScreenRoute
 import com.nikolayux.masterchariot.feature.functions.ui.FunctionScreenRoute
 import com.nikolayux.masterchariot.feature.trip.TripScreenRoute
 import kotlinx.serialization.Serializable
@@ -19,6 +20,8 @@ import kotlinx.serialization.Serializable
 @Composable
 fun NavigationScreen(
     navController: NavHostController,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
 //    sharedText: String? = null
 ) {
 
@@ -41,9 +44,16 @@ fun NavigationScreen(
             TripScreenRoute(modifier = Modifier, navController = navController)
         }
 
+        composable<Navigation.DtcErrors> {
+            DtcScreenRoute(modifier = Modifier)
+        }
+
         composable<Navigation.Settings> {
             CarListScreenRoute(
-                modifier = Modifier, navController = navController
+                modifier = Modifier,
+                navController = navController,
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme
             )
         }
     }
@@ -59,6 +69,9 @@ sealed interface Navigation {
 
     @Serializable
     object InstrumentPanel
+
+    @Serializable
+    object DtcErrors : Navigation
 
     @Serializable
     object Settings
