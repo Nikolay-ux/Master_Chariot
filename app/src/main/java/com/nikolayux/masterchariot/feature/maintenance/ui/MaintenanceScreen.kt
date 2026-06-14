@@ -1,5 +1,6 @@
 package com.nikolayux.masterchariot.feature.maintenance.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -212,7 +214,8 @@ private fun MileageSyncCard(
                 onValueChange = { onMessage(MaintenanceMessage.CurrentMileageChanged(it)) },
                 label = { Text(stringResource(R.string.dialog_car_mileage)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
+                singleLine = true,
+                shape = RoundedCornerShape(50)
             )
             Button(
                 onClick = { onMessage(MaintenanceMessage.SyncMileageClicked) },
@@ -257,7 +260,8 @@ private fun CompleteServiceCard(
                 onValueChange = { onMessage(MaintenanceMessage.ServiceMileageChanged(it)) },
                 label = { Text(stringResource(R.string.maintenance_service_mileage_label)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
+                singleLine = true,
+                shape = RoundedCornerShape(50)
             )
             Button(
                 onClick = { onMessage(MaintenanceMessage.CompleteServiceClicked) },
@@ -332,7 +336,8 @@ private fun AddMaintenanceRecordCard(
                 onValueChange = { onMessage(MaintenanceMessage.ActionMileageChanged(it)) },
                 label = { Text(stringResource(R.string.maintenance_action_mileage_label)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
+                singleLine = true,
+                shape = RoundedCornerShape(50)
             )
             Button(
                 onClick = { onMessage(MaintenanceMessage.AddRecordClicked) },
@@ -415,6 +420,31 @@ private fun MaintenanceRecordCard(
 @Preview(locale = "ru")
 @Composable
 private fun MaintenanceScreenPreview() {
+    MasterChariotTheme {
+        MaintenanceScreen(
+            state = MaintenanceState(
+                carId = 1,
+                carName = "Toyota Camry",
+                currentMileage = 124000,
+                serviceInterval = 10000,
+                lastServiceMileage = 118000,
+                currentMileageInput = "124000",
+                serviceMileageInput = "124000",
+                actionMileageInput = "124000",
+                records = listOf(
+                    MaintenanceRecord(carId = 1, action = "Замена масла", mileage = 118000),
+                    MaintenanceRecord(carId = 1, action = "Замена шаровой опоры", mileage = 123500)
+                )
+            ),
+            onMessage = {}
+        )
+    }
+}
+
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun MaintenanceScreenDarkPreview() {
     MasterChariotTheme {
         MaintenanceScreen(
             state = MaintenanceState(
