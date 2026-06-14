@@ -42,4 +42,25 @@
     <string name="bt_stop_find">Стоп</string>
     <string name="until_maintenance">До ТО</string>
     <string name="instrument_panel">Панель приборов</string>
+    <string name="dtc_refresh">Обновить DTC</string>
+    <string name="dtc_errors_title">Диагностические ошибки</string>
+    <string name="dtc_empty_title">Ошибок DTC нет</string>
+    <string name="dtc_empty_description">Сканер не вернул активные ошибки. Список можно обновить еще раз.</string>
+    <string name="dtc_not_connected_description">Подключите сканер, чтобы прочитать диагностические ошибки.</string>
+    <string name="dtc_loading">Чтение диагностических ошибок...</string>
+    <string name="dtc_unknown_title">Неизвестный диагностический код</string>
+    <string name="dtc_unknown_description">Этого кода пока нет во встроенном справочнике. Проверьте сервисную документацию выбранного автомобиля.</string>
+    <string name="dtc_known_description">Общее описание OBD-II. Точная причина зависит от автомобиля, показаний датчиков и freeze frame.</string>
+    <string name="dtc_system_powertrain">Двигатель/трансмиссия</string>
+    <string name="dtc_system_body">Кузов</string>
+    <string name="dtc_system_chassis">Шасси</string>
+    <string name="dtc_system_network">Сеть</string>
+    <string name="dtc_system_unknown">Неизвестная система</string>
+    <string name="connected">Подключено</string>
+    <string name="settings_my_cars">Мои автомобили</string>
+    <string name="settings_cars_empty">Автомобили пока не добавлены</string>
+    <string name="settings_app_theme">Тема приложения</string>
+    <string name="settings_notifications">Уведомления</string>
+    <string name="settings_notifications_off">Выкл</string>
+    <string name="settings_notifications_on">Вкл</string>
 </resources>

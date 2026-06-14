@@ -41,4 +41,25 @@
     <string name="bt_stop_find">Stop</string>
     <string name="until_maintenance">Until service</string>
     <string name="instrument_panel">Instrument panel</string>
+    <string name="dtc_refresh">Refresh DTC</string>
+    <string name="dtc_errors_title">Diagnostic trouble codes</string>
+    <string name="dtc_empty_title">No DTC errors</string>
+    <string name="dtc_empty_description">The scanner did not return active trouble codes. You can refresh the list again.</string>
+    <string name="dtc_not_connected_description">Connect the scanner to read diagnostic trouble codes.</string>
+    <string name="dtc_loading">Reading diagnostic trouble codes...</string>
+    <string name="dtc_unknown_title">Unknown diagnostic trouble code</string>
+    <string name="dtc_unknown_description">This code is not in the local reference yet. Check the service manual for the selected vehicle.</string>
+    <string name="dtc_known_description">Generic OBD-II description. The exact cause depends on the vehicle, sensor data, and freeze frame.</string>
+    <string name="dtc_system_powertrain">Powertrain</string>
+    <string name="dtc_system_body">Body</string>
+    <string name="dtc_system_chassis">Chassis</string>
+    <string name="dtc_system_network">Network</string>
+    <string name="dtc_system_unknown">Unknown system</string>
+    <string name="connected">Connected</string>
+    <string name="settings_my_cars">My cars</string>
+    <string name="settings_cars_empty">No cars yet</string>
+    <string name="settings_app_theme">App theme</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_notifications_off">Off</string>
+    <string name="settings_notifications_on">On</string>
 </resources>
