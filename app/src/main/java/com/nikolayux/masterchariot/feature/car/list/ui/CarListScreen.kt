@@ -22,14 +22,17 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -39,6 +42,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -82,7 +86,8 @@ fun CarListScreenRoute(
         onEvent = viewModel::action,
         listState = listState,
         isDarkTheme = isDarkTheme,
-        onToggleTheme = onToggleTheme
+        onToggleTheme = onToggleTheme,
+        onBackClick = { navController.popBackStack() }
     )
 }
 
@@ -93,11 +98,16 @@ private fun CarListScreen(
     onEvent: (CarListMessage) -> Unit = {},
     listState: LazyListState = rememberLazyListState(),
     isDarkTheme: Boolean,
-    onToggleTheme: () -> Unit
+    onToggleTheme: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     var notificationsEnabled by rememberSaveable { mutableStateOf(false) }
 
-    Scaffold { contentPadding ->
+    Scaffold(
+        topBar = {
+            SettingsTopAppBar(onBackClick = onBackClick)
+        }
+    ) { contentPadding ->
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -202,6 +212,24 @@ private fun CarListScreen(
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SettingsTopAppBar(
+    onBackClick: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.tab_settings)) },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null
+                )
+            }
+        }
+    )
 }
 
 @Composable
