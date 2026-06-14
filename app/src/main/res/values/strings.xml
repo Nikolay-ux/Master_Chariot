@@ -76,4 +76,11 @@
     <string name="trip_current_fuel_consumption">Current fuel</string>
     <string name="trip_fuel_consumed">Fuel used</string>
     <string name="trip_fuel_liters_unit">l</string>
+    <string name="trip_tracking_notification_channel_name">Trip tracking</string>
+    <string name="trip_tracking_notification_title">Trip tracking is active</string>
+    <string name="trip_tracking_notification_text">The app is calculating trip distance while the scanner is connected.</string>
+    <string name="maintenance_notification_channel_name">Maintenance reminders</string>
+    <string name="maintenance_notification_title">Maintenance required</string>
+    <string name="maintenance_notification_soon_text">Необходимо пройти техническое обслуживание</string>
+    <string name="maintenance_notification_urgent_text">Техническое обслуживание уже близко. Рекомендуется пройти его как можно скорее.</string>
 </resources>

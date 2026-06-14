@@ -102,7 +102,7 @@ fun ConnectScreenRoute(
         }
     }
 
-    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    val bluetoothPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         listOf(
             Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.BLUETOOTH_CONNECT,
@@ -115,23 +115,37 @@ fun ConnectScreenRoute(
             Manifest.permission.ACCESS_FINE_LOCATION
         )
     }
+    val notificationPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        listOf(Manifest.permission.POST_NOTIFICATIONS)
+    } else {
+        emptyList()
+    }
 
-    val permissionsState = rememberMultiplePermissionsState(permissions)
+    val bluetoothPermissionsState = rememberMultiplePermissionsState(bluetoothPermissions)
 
     LaunchedEffect(Unit) {
-        if (!permissionsState.allPermissionsGranted) {
-            permissionsState.launchMultiplePermissionRequest()
+        if (!bluetoothPermissionsState.allPermissionsGranted) {
+            bluetoothPermissionsState.launchMultiplePermissionRequest()
         }
     }
 
-    if (!permissionsState.allPermissionsGranted) {
+    if (notificationPermissions.isNotEmpty()) {
+        val notificationPermissionsState = rememberMultiplePermissionsState(notificationPermissions)
+        LaunchedEffect(Unit) {
+            if (!notificationPermissionsState.allPermissionsGranted) {
+                notificationPermissionsState.launchMultiplePermissionRequest()
+            }
+        }
+    }
+
+    if (!bluetoothPermissionsState.allPermissionsGranted) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(stringResource(R.string.bt_need_permissions))
-            Button(onClick = { permissionsState.launchMultiplePermissionRequest() }) {
+            Button(onClick = { bluetoothPermissionsState.launchMultiplePermissionRequest() }) {
                 Text(stringResource(R.string.bt_grant_permissions))
             }
         }

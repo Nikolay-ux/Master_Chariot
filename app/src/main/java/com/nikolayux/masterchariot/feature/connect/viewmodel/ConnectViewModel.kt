@@ -2,18 +2,20 @@ package com.nikolayux.masterchariot.feature.connect.viewmodel
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
+import android.content.Context
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.data.bluetooth.BluetoothService
-import com.nikolayux.masterchariot.data.trip.TripTracker
+import com.nikolayux.masterchariot.data.trip.service.TripTrackingService
 import com.nikolayux.masterchariot.feature.connect.state.ConnectEffect
 import com.nikolayux.masterchariot.feature.connect.state.ConnectMessage
 import com.nikolayux.masterchariot.feature.connect.state.ConnectState
 import com.nikolayux.masterchariot.feature.connect.state.ConnectionStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +28,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ConnectViewModel @Inject constructor(
     private val bluetoothService: BluetoothService,
-    private val tripTracker: TripTracker,
+    @param:ApplicationContext private val context: Context
 ) : ViewModel() {
     private val _state = MutableStateFlow(ConnectState())
     val state: StateFlow<ConnectState> = _state.asStateFlow()
@@ -55,13 +57,13 @@ class ConnectViewModel @Inject constructor(
                 }
                 when (status) {
                     ConnectionStatus.Connected -> {
-                        tripTracker.start()
+                        TripTrackingService.start(context)
                         _effect.send(ConnectEffect.Connected)
                     }
 
                     ConnectionStatus.Disconnected,
                     ConnectionStatus.Error -> {
-                        tripTracker.stop()
+                        TripTrackingService.stop(context)
                     }
 
                     else -> Unit

@@ -77,4 +77,11 @@
     <string name="trip_current_fuel_consumption">Текущий расход</string>
     <string name="trip_fuel_consumed">Топливо</string>
     <string name="trip_fuel_liters_unit">л</string>
+    <string name="trip_tracking_notification_channel_name">Трекер поездки</string>
+    <string name="trip_tracking_notification_title">Трекер поездки активен</string>
+    <string name="trip_tracking_notification_text">Приложение считает поездку, пока сканер подключен.</string>
+    <string name="maintenance_notification_channel_name">Напоминания о ТО</string>
+    <string name="maintenance_notification_title">Необходимо ТО</string>
+    <string name="maintenance_notification_soon_text">Необходимо пройти техническое обслуживание</string>
+    <string name="maintenance_notification_urgent_text">Техническое обслуживание уже близко. Рекомендуется пройти его как можно скорее.</string>
 </resources>

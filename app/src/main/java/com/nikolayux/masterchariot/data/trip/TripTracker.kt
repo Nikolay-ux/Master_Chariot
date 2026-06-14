@@ -1,5 +1,6 @@
 package com.nikolayux.masterchariot.data.trip
 
+import com.nikolayux.masterchariot.data.notification.MaintenanceNotifier
 import com.nikolayux.masterchariot.data.obd2.Obd2Service
 import com.nikolayux.masterchariot.feature.car.domain.CarRepository
 import jakarta.inject.Inject
@@ -19,6 +20,7 @@ import kotlin.math.roundToInt
 class TripTracker @Inject constructor(
     private val obd2Service: Obd2Service,
     private val carRepository: CarRepository,
+    private val maintenanceNotifier: MaintenanceNotifier
 ) {
 
     private val scope =
@@ -169,12 +171,18 @@ class TripTracker @Inject constructor(
             return
         }
 
-        carRepository.updateCar(
-            selectedCar.copy(
-                mileage =
-                    selectedCar.mileage +
-                            additionalMileage
-            )
+        val previousRemainingKm = selectedCar.serviceInterval -
+                (selectedCar.mileage - selectedCar.lastServiceMileage)
+        val updatedCar = selectedCar.copy(
+            mileage = selectedCar.mileage + additionalMileage
+        )
+        val currentRemainingKm = updatedCar.serviceInterval -
+                (updatedCar.mileage - updatedCar.lastServiceMileage)
+
+        carRepository.updateCar(updatedCar)
+        maintenanceNotifier.notifyIfNeeded(
+            previousRemainingKm = previousRemainingKm,
+            currentRemainingKm = currentRemainingKm
         )
     }
 
