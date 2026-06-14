@@ -60,16 +60,7 @@ class TripViewModel @Inject constructor(
                             String.format(
                                 "%.2f",
                                 trip.fuelConsumedLiters
-                            ),
-
-                        rpm =
-                            trip.rpm.toString(),
-
-                        coolantTemperature =
-                            trip.coolantTemperature.toString(),
-
-                        engineLoad =
-                            trip.engineLoad.toString()
+                            )
                     )
             }
         }

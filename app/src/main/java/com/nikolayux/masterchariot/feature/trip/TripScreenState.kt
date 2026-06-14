@@ -5,8 +5,5 @@ data class TripScreenState(
     val duration: String = "00:00:00",
     val averageSpeed: String = "0.0",
     val currentFuelConsumption: String = "0.0",
-    val fuelConsumedLiters: String = "0.0",
-    val rpm: String = "0",
-    val coolantTemperature: String = "0",
-    val engineLoad: String = "0"
+    val fuelConsumedLiters: String = "0.0"
 )
