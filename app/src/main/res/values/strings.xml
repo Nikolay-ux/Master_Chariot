@@ -62,4 +62,18 @@
     <string name="settings_notifications">Notifications</string>
     <string name="settings_notifications_off">Off</string>
     <string name="settings_notifications_on">On</string>
+    <string name="function_screen_trip_tracker">Trip</string>
+    <string name="function_screen_instrument_panel">Showing</string>
+    <string name="trip_tracker_title">Trip tracker</string>
+    <string name="instrument_rpm">Engine speed</string>
+    <string name="instrument_engine_load">Engine load</string>
+    <string name="instrument_coolant_temp">Coolant temp</string>
+    <string name="instrument_fuel_consumption">Fuel consumption</string>
+    <string name="trip_fuel_consumption_unit">l/100km</string>
+    <string name="trip_distance">Distance</string>
+    <string name="trip_duration">Duration</string>
+    <string name="trip_average_speed">Average speed</string>
+    <string name="trip_current_fuel_consumption">Current fuel</string>
+    <string name="trip_fuel_consumed">Fuel used</string>
+    <string name="trip_fuel_liters_unit">l</string>
 </resources>

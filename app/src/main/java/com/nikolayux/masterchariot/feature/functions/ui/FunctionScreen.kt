@@ -23,6 +23,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.BluetoothConnected
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Route
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -366,28 +368,61 @@ private fun MetricActions(
                     .fillMaxWidth()
                     .height(ButtonHeight)
             )
-        }
-    } else {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            RpmButton(
-                rpm = state.rpm,
+            InstrumentPanelButton(
                 onClick = { navController.navigate(Navigation.InstrumentPanel) },
                 modifier = Modifier
                     .weight(1f)
                     .height(ButtonHeight)
             )
-            DtcButton(
-                count = state.dtcCodes.size,
-                isLoading = state.isLoadingDtc,
-                onOpen = { navController.navigate(Navigation.DtcErrors) },
-                onRefresh = onRefreshDtc,
+            TripTrackerButton(
+                onClick = { navController.navigate(Navigation.TripTracker) },
                 modifier = Modifier
                     .weight(1f)
                     .height(ButtonHeight)
             )
+        }
+    } else {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = modifier,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                RpmButton(
+                    rpm = state.rpm,
+                    onClick = { navController.navigate(Navigation.InstrumentPanel) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(ButtonHeight)
+                )
+                DtcButton(
+                    count = state.dtcCodes.size,
+                    isLoading = state.isLoadingDtc,
+                    onOpen = { navController.navigate(Navigation.DtcErrors) },
+                    onRefresh = onRefreshDtc,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(ButtonHeight)
+                )
+            }
+            Row(
+                modifier = modifier,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                InstrumentPanelButton(
+                    onClick = { navController.navigate(Navigation.InstrumentPanel) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(ButtonHeight)
+                )
+                TripTrackerButton(
+                    onClick = { navController.navigate(Navigation.TripTracker) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(ButtonHeight)
+                )
+            }
         }
     }
 }
@@ -483,7 +518,7 @@ private fun DtcButton(
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.outline
+                    color = MaterialTheme.colorScheme.outlineVariant
                 ) {}
             }
 
@@ -506,6 +541,77 @@ private fun DtcButton(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun InstrumentPanelButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(50)
+
+    Surface(
+        modifier = modifier,
+        shape = shape,
+        color = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.primary,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(shape)
+                .clickable(onClick = onClick)
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(
+                space = 6.dp,
+                alignment = Alignment.CenterHorizontally
+            )
+        ) {
+            Icon(Icons.Default.Speed, null)
+            Text(
+                text = stringResource(R.string.function_screen_instrument_panel),
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun TripTrackerButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(50)
+
+    Surface(
+        modifier = modifier,
+        shape = shape,
+        color = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.primary,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(shape)
+                .clickable(onClick = onClick)
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(
+                space = 6.dp,
+                alignment = Alignment.CenterHorizontally
+            )
+        ) {
+            Icon(Icons.Default.Route, null)
+            Text(
+                text = stringResource(R.string.function_screen_trip_tracker),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
@@ -717,7 +823,7 @@ private fun FunctionScreenPreviewConnected() {
     }
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Preview(uiMode = UI_MODE_NIGHT_YES, locale = "ru")
 @Composable
 private fun FunctionScreenPreviewDisconnected() {
     MasterChariotTheme {

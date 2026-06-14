@@ -63,4 +63,18 @@
     <string name="settings_notifications">Уведомления</string>
     <string name="settings_notifications_off">Выкл</string>
     <string name="settings_notifications_on">Вкл</string>
+    <string name="function_screen_trip_tracker">Поездка</string>
+    <string name="function_screen_instrument_panel">Показатели</string>
+    <string name="trip_tracker_title">Трекер поездки</string>
+    <string name="instrument_rpm">Обороты</string>
+    <string name="instrument_engine_load">Нагрузка</string>
+    <string name="instrument_coolant_temp">Температура ОЖ</string>
+    <string name="instrument_fuel_consumption">Расход</string>
+    <string name="trip_fuel_consumption_unit">л/100км</string>
+    <string name="trip_distance">Расстояние</string>
+    <string name="trip_duration">Длительность</string>
+    <string name="trip_average_speed">Средняя скорость</string>
+    <string name="trip_current_fuel_consumption">Текущий расход</string>
+    <string name="trip_fuel_consumed">Топливо</string>
+    <string name="trip_fuel_liters_unit">л</string>
 </resources>
