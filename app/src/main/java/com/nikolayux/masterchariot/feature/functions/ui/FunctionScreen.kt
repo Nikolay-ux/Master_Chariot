@@ -641,7 +641,7 @@ private fun BottomPanel(
             ) {
                 ServiceButton(
                     state = state,
-                    onClick = { navController.navigate(Navigation.InstrumentPanel) },
+                    onClick = { navController.navigate(Navigation.Maintenance) },
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
@@ -662,7 +662,7 @@ private fun BottomPanel(
             ) {
                 ServiceButton(
                     state = state,
-                    onClick = { navController.navigate(Navigation.InstrumentPanel) },
+                    onClick = { navController.navigate(Navigation.Maintenance) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)

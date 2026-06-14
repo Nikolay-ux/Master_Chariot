@@ -14,6 +14,7 @@ import com.nikolayux.masterchariot.feature.connect.ui.ConnectScreenRoute
 import com.nikolayux.masterchariot.feature.functions.ui.DtcScreenRoute
 import com.nikolayux.masterchariot.feature.functions.ui.FunctionScreenRoute
 import com.nikolayux.masterchariot.feature.instrument.InstrumentPanelScreenRoute
+import com.nikolayux.masterchariot.feature.maintenance.ui.MaintenanceScreenRoute
 import com.nikolayux.masterchariot.feature.trip.TripScreenRoute
 import kotlinx.serialization.Serializable
 
@@ -53,6 +54,10 @@ fun NavigationScreen(
             DtcScreenRoute(modifier = Modifier)
         }
 
+        composable<Navigation.Maintenance> {
+            MaintenanceScreenRoute(modifier = Modifier)
+        }
+
         composable<Navigation.Settings> {
             CarListScreenRoute(
                 modifier = Modifier,
@@ -80,6 +85,9 @@ sealed interface Navigation {
 
     @Serializable
     object DtcErrors : Navigation
+
+    @Serializable
+    object Maintenance : Navigation
 
     @Serializable
     object Settings
