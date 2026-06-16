@@ -2,6 +2,9 @@ package com.nikolayux.masterchariot.feature.car.list.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +19,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -28,11 +32,13 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -50,6 +56,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -57,10 +65,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.feature.car.list.state.AddNewCarState
+import com.nikolayux.masterchariot.feature.car.list.state.CarUiModel
 import com.nikolayux.masterchariot.feature.car.list.state.CarListMessage
 import com.nikolayux.masterchariot.feature.car.list.state.CarListState
 import com.nikolayux.masterchariot.feature.car.list.viewmodel.CarViewModel
 import com.nikolayux.masterchariot.ui.theme.Black
+import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
 import com.nikolayux.masterchariot.ui.theme.White
 
 private val SettingsScreenPadding = 16.dp
@@ -114,13 +124,19 @@ private fun CarListScreen(
                     start = SettingsScreenPadding,
                     top = SettingsScreenPadding,
                     end = SettingsScreenPadding,
-                    bottom = 96.dp
+                    bottom = SettingsScreenPadding
                 ),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 state = listState
             ) {
                 item {
-                    SettingsHeader(text = stringResource(R.string.settings_my_cars))
+                    SettingsActionRow(
+                        title = stringResource(R.string.settings_my_cars)
+                    ) {
+                        AddCarButton(
+                            onClick = { onEvent(CarListMessage.AddCar) }
+                        )
+                    }
                 }
 
                 if (state.cars.isEmpty()) {
@@ -169,21 +185,6 @@ private fun CarListScreen(
                     }
                 }
             }
-
-            FloatingActionButton(
-                onClick = { onEvent(CarListMessage.AddCar) },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(
-                        end = 16.dp,
-                        bottom = 16.dp
-                    )
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = null,
-                )
-            }
         }
 
         state.addNewCarState?.let { addNewCarState ->
@@ -194,6 +195,7 @@ private fun CarListScreen(
                 onUpdate = { onEvent(CarListMessage.UpdateCar) },
                 onEditName = { onEvent(CarListMessage.NameChanged(it)) },
                 onEditMileage = { onEvent(CarListMessage.MileageChanged(it)) },
+                onEditLastServiceMileage = { onEvent(CarListMessage.LastServiceMileageChanged(it)) },
                 onEditInterval = { onEvent(CarListMessage.IntervalChanged(it)) },
                 onEditMeasure = { onEvent(CarListMessage.MeasureChanged(it)) }
             )
@@ -267,6 +269,33 @@ private fun SettingsActionRow(
 }
 
 @Composable
+private fun AddCarButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .height(SettingsControlHeight)
+            .width(SettingsControlHeight),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.primary
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = stringResource(R.string.dialog_car_title_add)
+            )
+        }
+    }
+}
+
+@Composable
 private fun ThemeModeButton(
     isDarkTheme: Boolean,
     onClick: () -> Unit,
@@ -318,8 +347,7 @@ private fun NotificationsToggleButton(
             .height(SettingsControlHeight),
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.primary,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        contentColor = MaterialTheme.colorScheme.primary
     ) {
         Row(
             modifier = Modifier
@@ -341,7 +369,7 @@ private fun NotificationsToggleButton(
                 label = stringResource(R.string.settings_notifications_on),
                 icon = Icons.Default.Notifications,
                 modifier = Modifier.weight(1f),
-                selectedColor = MaterialTheme.colorScheme.secondary,
+                selectedColor = MaterialTheme.colorScheme.primary,
                 selectedContentColor = MaterialTheme.colorScheme.background
             )
         }
@@ -396,70 +424,168 @@ fun AddCarDialog(
     onUpdate: () -> Unit = {},
     onEditName: (String) -> Unit = {},
     onEditMileage: (Int) -> Unit = {},
+    onEditLastServiceMileage: (Int) -> Unit = {},
     onEditInterval: (Int) -> Unit = {},
     onEditMeasure: (Boolean) -> Unit = {},
 ) {
-    val options = listOf("км", "мили")
-    val selectedIndex = if (state.isUsingMiles) 1 else 0
     Dialog(
         onDismissRequest = onDismissRequest
     ) {
-        Card {
-            Column {
-                Text(stringResource(R.string.dialog_car_name))
+        AddCarDialogCard(
+            state = state,
+            onDismissRequest = onDismissRequest,
+            onSaveClick = { if (state.isEdit) onUpdate() else onCreate() },
+            onEditName = onEditName,
+            onEditMileage = onEditMileage,
+            onEditLastServiceMileage = onEditLastServiceMileage,
+            onEditInterval = onEditInterval,
+            onEditMeasure = onEditMeasure
+        )
+    }
+}
+
+@Composable
+private fun AddCarDialogCard(
+    state: AddNewCarState,
+    onDismissRequest: () -> Unit = {},
+    onSaveClick: () -> Unit = {},
+    onEditName: (String) -> Unit = {},
+    onEditMileage: (Int) -> Unit = {},
+    onEditLastServiceMileage: (Int) -> Unit = {},
+    onEditInterval: (Int) -> Unit = {},
+    onEditMeasure: (Boolean) -> Unit = {},
+) {
+    val options = listOf(
+        stringResource(R.string.car_measure_km),
+        stringResource(R.string.car_measure_miles)
+    )
+    val selectedIndex = if (state.isUsingMiles) 1 else 0
+    val dialogTitle = if (state.isEdit) {
+        stringResource(R.string.dialog_car_title_edit)
+    } else {
+        stringResource(R.string.dialog_car_title_add)
+    }
+
+    Card(
+        modifier = Modifier
+            .widthIn(max = 420.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Text(
+                text = dialogTitle,
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.name,
+                onValueChange = { onEditName(it) },
+                label = { Text(stringResource(R.string.dialog_car_name)) },
+                singleLine = true,
+                enabled = !state.isSaving,
+                shape = RoundedCornerShape(50)
+            )
+
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = if (state.mileage == 0) "" else state.mileage.toString(),
+                onValueChange = { onEditMileage(it.toIntOrNull() ?: 0) },
+                label = { Text(stringResource(R.string.dialog_car_mileage)) },
+                singleLine = true,
+                enabled = !state.isSaving,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                shape = RoundedCornerShape(50)
+            )
+
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = if (state.lastServiceMileage == 0) "" else state.lastServiceMileage.toString(),
+                onValueChange = { onEditLastServiceMileage(it.toIntOrNull() ?: 0) },
+                label = { Text(stringResource(R.string.dialog_car_last_service_mileage)) },
+                singleLine = true,
+                enabled = !state.isSaving,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                shape = RoundedCornerShape(50)
+            )
+
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.serviceInterval.toString(),
+                onValueChange = { onEditInterval(it.toIntOrNull() ?: 0) },
+                label = { Text(stringResource(R.string.dialog_car_interval)) },
+                singleLine = true,
+                enabled = !state.isSaving,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                shape = RoundedCornerShape(50)
+            )
+
+            if (!state.vin.isNullOrBlank()) {
                 OutlinedTextField(
-                    value = state.name,
-                    onValueChange = { onEditName(it) }
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.vin,
+                    onValueChange = {},
+                    label = { Text("VIN") },
+                    readOnly = true,
+                    singleLine = true,
+                    shape = RoundedCornerShape(50)
                 )
-                Text(stringResource(R.string.dialog_car_mileage))
-                OutlinedTextField(
-                    value = if (state.mileage == 0) "" else state.mileage.toString(),
-                    onValueChange = { onEditMileage(it.toIntOrNull() ?: 0) }
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.dialog_car_measure),
+                    style = MaterialTheme.typography.titleMedium
                 )
-                Text(stringResource(R.string.dialog_car_interval))
-                OutlinedTextField(
-                    value = state.serviceInterval.toString(),
-                    onValueChange = { onEditInterval(it.toIntOrNull() ?: 0) }
-                )
-                if (!state.vin.isNullOrBlank()) {
-                    Text("VIN")
-                    OutlinedTextField(
-                        value = state.vin,
-                        onValueChange = {},
-                        readOnly = true
-                    )
-                }
-                Text(stringResource(R.string.dialog_car_measure))
-                SingleChoiceSegmentedButtonRow {
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     options.forEachIndexed { index, label ->
                         SegmentedButton(
+                            modifier = Modifier.weight(1f),
                             shape = SegmentedButtonDefaults.itemShape(
                                 index = index,
                                 count = options.size
                             ),
                             onClick = { onEditMeasure(index == 1) },
-                            selected = index == selectedIndex
+                            selected = index == selectedIndex,
+                            enabled = !state.isSaving
                         ) {
                             Text(label)
                         }
                     }
                 }
+            }
 
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = onDismissRequest,
+                    enabled = !state.isSaving
                 ) {
-                    TextButton(onClick = onDismissRequest) {
-                        Text(stringResource(R.string.dialog_car_cancel))
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    TextButton(
-                        onClick = { if (state.isEdit) onUpdate() else onCreate() },
-                        enabled = state.name.isNotBlank()
-                    ) {
-                        Text(stringResource(R.string.dialog_car_save))
-                    }
+                    Text(stringResource(R.string.dialog_car_cancel))
+                }
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = onSaveClick,
+                    enabled = state.name.isNotBlank() && !state.isSaving
+                ) {
+                    Text(stringResource(R.string.dialog_car_save))
                 }
             }
         }
@@ -510,3 +636,88 @@ fun UnknownVinDialog(
         }
     }
 }
+
+@Preview(name = "Settings screen", showBackground = true)
+@Composable
+private fun CarListScreenPreview() {
+    MasterChariotTheme(darkTheme = true) {
+        CarListScreen(
+            state = previewCarListState(),
+            isDarkTheme = true,
+            onToggleTheme = {},
+            onBackClick = {}
+        )
+    }
+}
+
+@Preview(name = "Add car", showBackground = true, widthDp = 420)
+@Composable
+private fun AddCarDialogCardPreview() {
+    MasterChariotTheme(darkTheme = true) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            AddCarDialogCard(
+                state = AddNewCarState(
+                    name = "Toyota Camry",
+                    mileage = 82000,
+                    lastServiceMileage = 76000,
+                    serviceInterval = 7000
+                )
+            )
+        }
+    }
+}
+
+@Preview(name = "Edit car", showBackground = true, widthDp = 420)
+@Composable
+private fun EditCarDialogCardPreview() {
+    MasterChariotTheme(darkTheme = true) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            AddCarDialogCard(
+                state = AddNewCarState(
+                    id = 1,
+                    name = "BMW 3 Series",
+                    mileage = 124300,
+                    lastServiceMileage = 119500,
+                    serviceInterval = 8000,
+                    vin = "WBA8E9G50JNU12345",
+                    isEdit = true
+                )
+            )
+        }
+    }
+}
+
+private fun previewCarListState() = CarListState(
+    cars = listOf(
+        CarUiModel(
+            id = 1,
+            name = "Toyota Camry",
+            mileage = 82000,
+            serviceInterval = 7000,
+            lastServiceMileage = 76000,
+            vin = "JTNB11HK903123456",
+            isSelected = true,
+            kmUntilMaintenance = 1000
+        ),
+        CarUiModel(
+            id = 2,
+            name = "BMW 3 Series",
+            mileage = 124300,
+            serviceInterval = 8000,
+            lastServiceMileage = 119500,
+            vin = "WBA8E9G50JNU12345",
+            kmUntilMaintenance = 3200
+        )
+    ),
+    notificationsEnabled = true
+)

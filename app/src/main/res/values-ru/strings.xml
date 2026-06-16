@@ -19,9 +19,12 @@
     <string name="bt_grant_permissions">Предоставить разрешения</string>
     <string name="car_menu_delete">Удалить</string>
     <string name="car_menu_edit">Изменить</string>
+    <string name="dialog_car_title_add">Добавить автомобиль</string>
+    <string name="dialog_car_title_edit">Изменить автомобиль</string>
     <string name="dialog_car_name">Название</string>
     <string name="dialog_car_mileage">Пробег</string>
     <string name="dialog_car_interval">Интервал ТО</string>
+    <string name="dialog_car_last_service_mileage">Пробег последнего ТО</string>
     <string name="dialog_car_measure">Мера расстояния</string>
     <string name="dialog_car_cancel">Отмена</string>
     <string name="dialog_car_save">Сохранить</string>
