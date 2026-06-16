@@ -20,7 +20,8 @@ import kotlin.math.abs
 
 @Singleton
 class MaintenanceNotifier @Inject constructor(
-    @param:ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context,
+    private val notificationSettings: NotificationSettings
 ) {
 
     fun notifyIfNeeded(previousRemainingKm: Int, currentRemainingKm: Int) {
@@ -57,6 +58,7 @@ class MaintenanceNotifier @Inject constructor(
     }
 
     private fun showMaintenanceNotification(thresholdKm: Int) {
+        if (!notificationSettings.areMaintenanceNotificationsEnabled()) return
         if (!canPostNotifications()) return
 
         createChannel()

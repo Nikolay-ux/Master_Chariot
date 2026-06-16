@@ -2,6 +2,7 @@ package com.nikolayux.masterchariot.feature.car.list.state
 
 data class CarListState(
     val cars: List<CarUiModel> = emptyList(),
+    val notificationsEnabled: Boolean = true,
     val addNewCarState: AddNewCarState? = null,
     val unknownVin: String? = null
 )

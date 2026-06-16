@@ -17,4 +17,5 @@ sealed interface CarListMessage {
     data class UnknownVinDetected(val vin: String) : CarListMessage
     data object DismissUnknownVinDialog : CarListMessage
     data object CreateCarFromVin : CarListMessage
+    data object ToggleNotifications : CarListMessage
 }
