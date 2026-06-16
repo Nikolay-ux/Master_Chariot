@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nikolayux.masterchariot.data.notification.NotificationSettings
 import com.nikolayux.masterchariot.data.obd2.Obd2Service
 import com.nikolayux.masterchariot.feature.car.domain.Car
 import com.nikolayux.masterchariot.feature.car.domain.CarRepository
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class CarViewModel @Inject constructor(
     private val repository: CarRepository,
-    private val obd2Service: Obd2Service
+    private val obd2Service: Obd2Service,
+    private val notificationSettings: NotificationSettings
 ) : ViewModel() {
 //    private val repository: CarRepository =
 //        CarRepositoryImpl(AppDatabase.getInstance(application).carDao)
@@ -39,6 +41,11 @@ class CarViewModel @Inject constructor(
                     )
                 }
 
+            }
+        }
+        viewModelScope.launch {
+            notificationSettings.maintenanceNotificationsEnabled.collect { enabled ->
+                state = state.copy(notificationsEnabled = enabled)
             }
         }
     }
@@ -134,6 +141,9 @@ class CarViewModel @Inject constructor(
                 state = state.copy(
                     unknownVin = message.vin
                 )
+            }
+            CarListMessage.ToggleNotifications -> {
+                notificationSettings.setMaintenanceNotificationsEnabled(!state.notificationsEnabled)
             }
         }
     }

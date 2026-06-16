@@ -110,4 +110,5 @@
     <string name="maintenance_action_coolant">Охлаждающая жидкость</string>
     <string name="maintenance_action_ball_joint">Шаровая опора</string>
     <string name="maintenance_action_other">Другое</string>
+    <string name="car_card_mileage_value">%1$d км</string>
 </resources>

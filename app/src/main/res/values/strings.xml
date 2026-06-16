@@ -109,4 +109,5 @@
     <string name="maintenance_action_coolant">Coolant</string>
     <string name="maintenance_action_ball_joint">Ball joint</string>
     <string name="maintenance_action_other">Other</string>
+    <string name="car_card_mileage_value">%1$d km</string>
 </resources>
