@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class TripTracker @Inject constructor(
@@ -99,7 +100,7 @@ class TripTracker @Inject constructor(
 
             while (true) {
 
-                delay(1000)
+                delay(1000.milliseconds)
 
                 if (currentSpeed > 0) {
                     tripTimeSeconds++

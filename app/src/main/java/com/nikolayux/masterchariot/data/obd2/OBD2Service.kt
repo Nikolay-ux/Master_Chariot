@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class Obd2Service @Inject constructor(
@@ -102,22 +103,22 @@ class Obd2Service @Inject constructor(
             conn.run(ResetAdapterCommand())
             Log.d("OBD", "AT Z OK")
 
-            delay(2000)
+            delay(2000.milliseconds)
 
             conn.run(SetEchoCommand(Switcher.OFF))
             Log.d("OBD", "AT E0 OK")
 
-            delay(300)
+            delay(300.milliseconds)
 
             conn.run(SetLineFeedCommand(Switcher.OFF))
             Log.d("OBD", "AT L0 OK")
 
-            delay(300)
+            delay(300.milliseconds)
 
             conn.run(SetHeadersCommand(Switcher.OFF))
             Log.d("OBD", "AT H0 OK")
 
-            delay(300)
+            delay(300.milliseconds)
 
             readVin()
 

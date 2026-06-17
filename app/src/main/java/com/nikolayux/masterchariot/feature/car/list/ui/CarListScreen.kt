@@ -1,5 +1,6 @@
 package com.nikolayux.masterchariot.feature.car.list.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,6 +42,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -131,6 +134,7 @@ private fun CarListScreen(
                         title = stringResource(R.string.settings_my_cars)
                     ) {
                         AddCarButton(
+                            isDarkTheme = isDarkTheme,
                             onClick = { onEvent(CarListMessage.AddCar) }
                         )
                     }
@@ -269,16 +273,19 @@ private fun SettingsActionRow(
 
 @Composable
 private fun AddCarButton(
+    isDarkTheme: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = blueWhiteControlColors(isDarkTheme)
+
     Surface(
         modifier = modifier
             .height(SettingsControlHeight)
             .width(SettingsControlHeight),
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceContainer,
-        contentColor = MaterialTheme.colorScheme.surface
+        color = colors.containerColor,
+        contentColor = colors.contentColor,
     ) {
         Box(
             modifier = Modifier
@@ -301,24 +308,15 @@ private fun ThemeModeButton(
     modifier: Modifier = Modifier
 ) {
     val targetIsDark = !isDarkTheme
-    val containerColor = if (targetIsDark) {
-        MaterialTheme.colorScheme.secondary
-    } else {
-        MaterialTheme.colorScheme.primary
-    }
-    val contentColor = if (targetIsDark) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.secondary
-    }
+    val colors = blueWhiteControlColors(isDarkTheme)
 
     Surface(
         modifier = modifier
             .height(SettingsControlHeight)
             .width(SettingsControlHeight),
         shape = RoundedCornerShape(16.dp),
-        color = containerColor,
-        contentColor = contentColor
+        color = colors.containerColor,
+        contentColor = colors.contentColor,
     ) {
         Box(
             modifier = Modifier
@@ -333,6 +331,28 @@ private fun ThemeModeButton(
         }
     }
 }
+
+@Composable
+private fun blueWhiteControlColors(isDarkTheme: Boolean): SettingsControlColors {
+    val blue = MaterialTheme.colorScheme.secondary
+    val white = MaterialTheme.colorScheme.onSecondary
+    return if (isDarkTheme) {
+        SettingsControlColors(
+            containerColor = white,
+            contentColor = blue
+        )
+    } else {
+        SettingsControlColors(
+            containerColor = blue,
+            contentColor = white
+        )
+    }
+}
+
+private data class SettingsControlColors(
+    val containerColor: Color,
+    val contentColor: Color,
+)
 
 @Composable
 private fun NotificationsToggleButton(
@@ -360,16 +380,16 @@ private fun NotificationsToggleButton(
                 label = stringResource(R.string.settings_notifications_off),
                 icon = Icons.Default.NotificationsOff,
                 modifier = Modifier.weight(1.2f),
-                selectedColor = MaterialTheme.colorScheme.onSurface,
-                selectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                selectedColor = MaterialTheme.colorScheme.primary,
+                selectedContentColor = MaterialTheme.colorScheme.onPrimary
             )
             NotificationToggleSegment(
                 selected = enabled,
                 label = stringResource(R.string.settings_notifications_on),
                 icon = Icons.Default.Notifications,
                 modifier = Modifier.weight(1f),
-                selectedColor = MaterialTheme.colorScheme.surfaceContainer,
-                selectedContentColor = MaterialTheme.colorScheme.surface
+                selectedColor = MaterialTheme.colorScheme.secondary,
+                selectedContentColor = MaterialTheme.colorScheme.onSecondary
             )
         }
     }
@@ -464,14 +484,44 @@ private fun AddCarDialogCard(
     } else {
         stringResource(R.string.dialog_car_title_add)
     }
+    val fieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = MaterialTheme.colorScheme.primary,
+        unfocusedTextColor = MaterialTheme.colorScheme.primary,
+        disabledTextColor = MaterialTheme.colorScheme.secondary,
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        disabledContainerColor = Color.Transparent,
+        cursorColor = MaterialTheme.colorScheme.primary,
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+        disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
+        focusedLabelColor = MaterialTheme.colorScheme.primary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.secondary,
+        disabledLabelColor = MaterialTheme.colorScheme.secondary
+    )
+    val segmentedButtonColors = SegmentedButtonDefaults.colors(
+        activeContainerColor = MaterialTheme.colorScheme.primary,
+        activeContentColor = MaterialTheme.colorScheme.onPrimary,
+        activeBorderColor = MaterialTheme.colorScheme.primary,
+        inactiveContainerColor = Color.Transparent,
+        inactiveContentColor = MaterialTheme.colorScheme.primary,
+        inactiveBorderColor = MaterialTheme.colorScheme.outlineVariant,
+        disabledActiveContainerColor = MaterialTheme.colorScheme.primaryContainer,
+        disabledActiveContentColor = MaterialTheme.colorScheme.secondary,
+        disabledInactiveContainerColor = Color.Transparent,
+        disabledInactiveContentColor = MaterialTheme.colorScheme.secondary,
+        disabledActiveBorderColor = MaterialTheme.colorScheme.outlineVariant,
+        disabledInactiveBorderColor = MaterialTheme.colorScheme.outlineVariant
+    )
 
     Card(
         modifier = Modifier
             .widthIn(max = 420.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.primary
         )
     ) {
@@ -493,6 +543,7 @@ private fun AddCarDialogCard(
                 label = { Text(stringResource(R.string.dialog_car_name)) },
                 singleLine = true,
                 enabled = !state.isSaving,
+                colors = fieldColors,
                 shape = RoundedCornerShape(50)
             )
 
@@ -504,6 +555,7 @@ private fun AddCarDialogCard(
                 singleLine = true,
                 enabled = !state.isSaving,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = fieldColors,
                 shape = RoundedCornerShape(50)
             )
 
@@ -515,6 +567,7 @@ private fun AddCarDialogCard(
                 singleLine = true,
                 enabled = !state.isSaving,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = fieldColors,
                 shape = RoundedCornerShape(50)
             )
 
@@ -526,6 +579,7 @@ private fun AddCarDialogCard(
                 singleLine = true,
                 enabled = !state.isSaving,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = fieldColors,
                 shape = RoundedCornerShape(50)
             )
 
@@ -537,6 +591,7 @@ private fun AddCarDialogCard(
                     label = { Text(stringResource(R.string.car_vin_label)) },
                     readOnly = true,
                     singleLine = true,
+                    colors = fieldColors,
                     shape = RoundedCornerShape(50)
                 )
             }

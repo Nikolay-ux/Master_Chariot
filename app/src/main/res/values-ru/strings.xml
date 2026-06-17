@@ -53,7 +53,7 @@
     <string name="dtc_empty_title">Ошибок DTC нет</string>
     <string name="dtc_empty_description">Сканер не вернул активные ошибки. Список можно обновить еще раз.</string>
     <string name="dtc_not_connected_description">Подключите сканер, чтобы прочитать диагностические ошибки.</string>
-    <string name="dtc_loading">Чтение диагностических ошибок...</string>
+    <string name="dtc_loading">Чтение диагностических ошибок…</string>
     <string name="dtc_unknown_title">Неизвестный диагностический код</string>
     <string name="dtc_unknown_description">Этого кода пока нет во встроенном справочнике. Проверьте сервисную документацию выбранного автомобиля.</string>
     <string name="dtc_known_description">Общее описание OBD-II. Точная причина зависит от автомобиля, показаний датчиков и freeze frame.</string>

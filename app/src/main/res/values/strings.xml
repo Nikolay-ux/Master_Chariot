@@ -52,7 +52,7 @@
     <string name="dtc_empty_title">No DTC errors</string>
     <string name="dtc_empty_description">The scanner did not return active trouble codes. You can refresh the list again.</string>
     <string name="dtc_not_connected_description">Connect the scanner to read diagnostic trouble codes.</string>
-    <string name="dtc_loading">Reading diagnostic trouble codes...</string>
+    <string name="dtc_loading">Reading diagnostic trouble codes…</string>
     <string name="dtc_unknown_title">Unknown diagnostic trouble code</string>
     <string name="dtc_unknown_description">This code is not in the local reference yet. Check the service manual for the selected vehicle.</string>
     <string name="dtc_known_description">Generic OBD-II description. The exact cause depends on the vehicle, sensor data, and freeze frame.</string>
