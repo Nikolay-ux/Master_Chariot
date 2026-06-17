@@ -18,6 +18,9 @@
     <string name="bt_grant_permissions">Grant permissions</string>
     <string name="car_menu_delete">Delete</string>
     <string name="car_menu_edit">Edit</string>
+    <string name="car_delete_confirm_title">Are you sure?</string>
+    <string name="car_delete_confirm_yes">Yes, delete</string>
+    <string name="car_delete_confirm_no">No</string>
     <string name="dialog_car_title_add">Add car</string>
     <string name="dialog_car_title_edit">Edit car</string>
     <string name="dialog_car_name">Name</string>

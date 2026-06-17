@@ -19,6 +19,9 @@
     <string name="bt_grant_permissions">Предоставить разрешения</string>
     <string name="car_menu_delete">Удалить</string>
     <string name="car_menu_edit">Изменить</string>
+    <string name="car_delete_confirm_title">Вы уверены?</string>
+    <string name="car_delete_confirm_yes">Да, удалить</string>
+    <string name="car_delete_confirm_no">Нет</string>
     <string name="dialog_car_title_add">Добавить автомобиль</string>
     <string name="dialog_car_title_edit">Изменить автомобиль</string>
     <string name="dialog_car_name">Название</string>

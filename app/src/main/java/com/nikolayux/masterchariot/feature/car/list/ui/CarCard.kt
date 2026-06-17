@@ -1,5 +1,6 @@
 package com.nikolayux.masterchariot.feature.car.list.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.feature.car.list.state.CarUiModel
 import com.nikolayux.masterchariot.ui.theme.MasterChariotTheme
@@ -50,9 +54,10 @@ fun CarCard(
 ) {
     var detailsExpanded by remember { mutableStateOf(false) }
     var menuExpanded by remember { mutableStateOf(false) }
+    var deleteDialogVisible by remember { mutableStateOf(false) }
 
     val containerColor = if (car.isSelected) {
-        MaterialTheme.colorScheme.secondaryContainer
+        MaterialTheme.colorScheme.tertiaryContainer
     } else {
         MaterialTheme.colorScheme.primaryContainer
     }
@@ -112,26 +117,55 @@ fun CarCard(
                     )
                     DropdownMenu(
                         expanded = menuExpanded,
-                        onDismissRequest = { menuExpanded = false }
+                        onDismissRequest = { menuExpanded = false },
+                        shape = RoundedCornerShape(16.dp),
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        tonalElevation = 0.dp,
+                        shadowElevation = 8.dp,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                     ) {
                         DropdownMenuItem(
-                            text = { Text(stringResource(R.string.car_menu_edit)) },
-                            leadingIcon = { Icon(Icons.Default.Edit, null) },
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.car_menu_edit),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = null
+                                )
+                            },
+                            colors = MenuDefaults.itemColors(
+                                textColor = MaterialTheme.colorScheme.primary,
+                                leadingIconColor = MaterialTheme.colorScheme.primary
+                            ),
                             onClick = {
                                 editCarClicked()
                                 menuExpanded = false
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text(stringResource(R.string.car_menu_delete)) },
-                            leadingIcon = { Icon(Icons.Default.Delete, null) },
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.car_menu_delete),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null
+                                )
+                            },
                             colors = MenuDefaults.itemColors(
                                 textColor = Red,
                                 leadingIconColor = Red
                             ),
                             onClick = {
-                                deleteCarClicked()
                                 menuExpanded = false
+                                deleteDialogVisible = true
                             }
                         )
                     }
@@ -140,6 +174,73 @@ fun CarCard(
 
             if (detailsExpanded) {
                 CarDetailsContent(car = car)
+            }
+        }
+    }
+
+    if (deleteDialogVisible) {
+        DeleteCarConfirmDialog(
+            onConfirm = {
+                deleteDialogVisible = false
+                deleteCarClicked()
+            },
+            onDismiss = { deleteDialogVisible = false }
+        )
+    }
+}
+
+@Composable
+private fun DeleteCarConfirmDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.car_delete_confirm_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    TextButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = onConfirm
+                    ) {
+                        Text(
+                            text = stringResource(R.string.car_delete_confirm_yes),
+                            color = Red,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    TextButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = onDismiss
+                    ) {
+                        Text(
+                            text = stringResource(R.string.car_delete_confirm_no),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
         }
     }
