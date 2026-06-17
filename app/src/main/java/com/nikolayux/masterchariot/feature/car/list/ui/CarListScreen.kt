@@ -235,20 +235,6 @@ private fun SettingsTopAppBar(
 }
 
 @Composable
-private fun SettingsHeader(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 4.dp, bottom = 8.dp),
-        text = text,
-        style = MaterialTheme.typography.headlineMedium
-    )
-}
-
-@Composable
 private fun SettingsActionRow(
     title: String,
     modifier: Modifier = Modifier,
@@ -498,20 +484,7 @@ private fun AddCarDialogCard(
         unfocusedLabelColor = MaterialTheme.colorScheme.secondary,
         disabledLabelColor = MaterialTheme.colorScheme.secondary
     )
-    val segmentedButtonColors = SegmentedButtonDefaults.colors(
-        activeContainerColor = MaterialTheme.colorScheme.primary,
-        activeContentColor = MaterialTheme.colorScheme.onPrimary,
-        activeBorderColor = MaterialTheme.colorScheme.primary,
-        inactiveContainerColor = Color.Transparent,
-        inactiveContentColor = MaterialTheme.colorScheme.primary,
-        inactiveBorderColor = MaterialTheme.colorScheme.outlineVariant,
-        disabledActiveContainerColor = MaterialTheme.colorScheme.primaryContainer,
-        disabledActiveContentColor = MaterialTheme.colorScheme.secondary,
-        disabledInactiveContainerColor = Color.Transparent,
-        disabledInactiveContentColor = MaterialTheme.colorScheme.secondary,
-        disabledActiveBorderColor = MaterialTheme.colorScheme.outlineVariant,
-        disabledInactiveBorderColor = MaterialTheme.colorScheme.outlineVariant
-    )
+
 
     Card(
         modifier = Modifier
