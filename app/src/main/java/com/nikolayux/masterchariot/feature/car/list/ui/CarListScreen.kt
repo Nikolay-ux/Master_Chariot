@@ -38,6 +38,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.MaterialTheme
@@ -218,7 +219,9 @@ private fun SettingsTopAppBar(
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
+            navigationIconContentColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.primary
         ),
         title = { Text(stringResource(R.string.tab_settings)) },
         navigationIcon = {
@@ -278,8 +281,8 @@ private fun AddCarButton(
             .height(SettingsControlHeight)
             .width(SettingsControlHeight),
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        contentColor = MaterialTheme.colorScheme.surface
     ) {
         Box(
             modifier = Modifier
@@ -303,14 +306,14 @@ private fun ThemeModeButton(
 ) {
     val targetIsDark = !isDarkTheme
     val containerColor = if (targetIsDark) {
-        MaterialTheme.colorScheme.primary
+        MaterialTheme.colorScheme.secondary
     } else {
-        MaterialTheme.colorScheme.primaryContainer
+        MaterialTheme.colorScheme.primary
     }
     val contentColor = if (targetIsDark) {
         MaterialTheme.colorScheme.primaryContainer
     } else {
-        MaterialTheme.colorScheme.primary
+        MaterialTheme.colorScheme.secondary
     }
 
     Surface(
@@ -361,16 +364,16 @@ private fun NotificationsToggleButton(
                 label = stringResource(R.string.settings_notifications_off),
                 icon = Icons.Default.NotificationsOff,
                 modifier = Modifier.weight(1.2f),
-                selectedColor = Black,
-                selectedContentColor = White
+                selectedColor = MaterialTheme.colorScheme.onSurface,
+                selectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
             NotificationToggleSegment(
                 selected = enabled,
                 label = stringResource(R.string.settings_notifications_on),
                 icon = Icons.Default.Notifications,
                 modifier = Modifier.weight(1f),
-                selectedColor = MaterialTheme.colorScheme.primary,
-                selectedContentColor = MaterialTheme.colorScheme.background
+                selectedColor = MaterialTheme.colorScheme.surfaceContainer,
+                selectedContentColor = MaterialTheme.colorScheme.surface
             )
         }
     }
