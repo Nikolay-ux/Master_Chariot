@@ -5,8 +5,6 @@ plugins {
     id("kotlin-parcelize")
     kotlin("plugin.serialization")
     alias(libs.plugins.hilt)
-
-    id("com.chaquo.python")
 }
 
 android {
@@ -51,14 +49,6 @@ android {
     }
 }
 
-chaquopy {
-    defaultConfig {
-        version = "3.11"
-        pyc {
-            src = false
-        }
-    }
-}
 
 dependencies {
     implementation(libs.androidx.compose.foundation)

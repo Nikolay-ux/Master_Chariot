@@ -30,21 +30,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
-/**
-На данный момент работают команды: для сброса адаптера и для выключения эхо режима (строки 86, 96)
-Затем начинается выполнение следующей команды, данные в ответ не приходят, поток программы блокируется - это проблема.
-Так как данные не придут программа стоит и никакой ошибки не происходит.
-Еще нюанс НЕ работает взаимодействие с реализованной библиотекой kotlin-obd-api.
-Если со сканера не приходят и данные об инициализации, это тоже плохо, как раз они приходят нестабильно, думаю тут дело в сканере, не хочет часто отправлять команды и перегружается, для него это нормально
-Нужно смотреть на реализацию метода sendRawCommand, так как в нем располагается ключевая часть моей программы - корректные отправка и получение данных.
-Проблема заключается в нестабильности работы этого метода, но тут опять же можно спереть проблему на сканер, предположим, что он нестабильно отправляет команды и перегружается от частых запросов
-нейронка мне писала о такой проблеме "китайских" аналогов оригинального адаптера ELM327, которые в свою очередь не производятся. Производство завершилось кажется в 2022 году, компания закрылась.
-С большой вероятностью могу сказать, что подключение по Bluetooth выполняется корректно, и за него беспокоиться не стоит. Самая большая проблема я полагаю находится в этом файле.
- *
- */
-
-
 @Singleton
 class Obd2Service @Inject constructor(
     private val bluetoothService: BluetoothService,
@@ -136,15 +121,6 @@ class Obd2Service @Inject constructor(
 
             readVin()
 
-//            val supported = conn.run(AvailablePIDsCommand(
-//                range = AvailablePIDsCommand.AvailablePIDsRanges.PIDS_01_TO_20
-//            ))
-
-//            Log.d(
-//                "OBD",
-//                "Supported PIDs: ${supported}"
-//            )
-
             Log.d("OBD", "=== INIT SUCCESS ===")
             true
 
@@ -158,10 +134,8 @@ class Obd2Service @Inject constructor(
         try {
             val result = withContext(Dispatchers.IO) {
                 obdConnection?.run(RPMCommand())
-//                obdConnection?.run(RawObdCommand("01 0C"))
             }
             Log.d("OBD", "RPM response = $result")
-//            val raw = result?.value ?: return
             val rpmValue = parseRpm(result?.rawResponse?.value ?: "")
             if (rpmValue != null) {
                 _rpm.value = rpmValue
@@ -175,12 +149,9 @@ class Obd2Service @Inject constructor(
     private suspend fun readSpeed() {
         try {
             val result = withContext(Dispatchers.IO) {
-//                obdConnection?.run(RawObdCommand("01 0D"))
                 obdConnection?.run(SpeedCommand())
             }
             Log.d("OBD", "Speed response = $result")
-
-//            val raw = result?.value ?: return
 
             val speedValue = parseSpeed(result?.rawResponse?.value ?: "")
 

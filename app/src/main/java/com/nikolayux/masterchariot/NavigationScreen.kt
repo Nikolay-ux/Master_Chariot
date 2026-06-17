@@ -1,7 +1,5 @@
 package com.nikolayux.masterchariot
 
-//import androidx.compose.runtime.LaunchedEffect
-//import androidx.navigation.toRoute
 import android.Manifest
 import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.Composable
@@ -24,15 +22,7 @@ fun NavigationScreen(
     navController: NavHostController,
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
-//    sharedText: String? = null
 ) {
-
-//    LaunchedEffect(sharedText) {
-//        if (!sharedText.isNullOrEmpty()) {
-//            navController.navigate(Navigation.NewEvent(id = -1L, text = sharedText))
-//        }
-//    }
-
     NavHost(navController = navController, startDestination = Navigation.Main) {
         composable<Navigation.Main> {
             FunctionScreenRoute(modifier = Modifier, navController = navController)

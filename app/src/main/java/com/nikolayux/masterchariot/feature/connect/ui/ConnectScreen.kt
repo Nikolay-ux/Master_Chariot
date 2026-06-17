@@ -88,7 +88,6 @@ fun ConnectScreenRoute(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ConnectEffect.Connected -> {
-//                    Toast.makeText(context, "Подключено", Toast.LENGTH_SHORT).show()
                     navController.popBackStack()
                 }
 

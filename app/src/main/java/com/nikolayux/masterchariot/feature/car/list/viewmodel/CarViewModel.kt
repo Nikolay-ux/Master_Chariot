@@ -23,8 +23,6 @@ class CarViewModel @Inject constructor(
     private val obd2Service: Obd2Service,
     private val notificationSettings: NotificationSettings
 ) : ViewModel() {
-//    private val repository: CarRepository =
-//        CarRepositoryImpl(AppDatabase.getInstance(application).carDao)
 
     var state by mutableStateOf(CarListState())
         private set

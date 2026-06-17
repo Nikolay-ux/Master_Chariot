@@ -115,11 +115,6 @@ class TripTracker @Inject constructor(
                                 (tripTimeSeconds / 3600.0)
                     }
 
-                /*
-                 * Расход топлива за секунду
-                 *
-                 * MAF -> л/час
-                 */
                 val fuelRateLitersPerHour =
                     (currentMaf * 3600f) /
                             (14.7f * 745f)

@@ -1,5 +1,6 @@
 package com.nikolayux.masterchariot.feature.maintenance.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import com.nikolayux.masterchariot.feature.maintenance.domain.MaintenanceRecord
 
@@ -17,7 +18,7 @@ data class MaintenanceState(
     val actionMileageInput: String = "",
     val records: List<MaintenanceRecord> = emptyList(),
     val isSaving: Boolean = false,
-    val message: String? = null
+    @param:StringRes val message: Int? = null
 ) {
     val kmUntilMaintenance: Int
         get() = maxOf(0, serviceInterval - (currentMileage - lastServiceMileage))

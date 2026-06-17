@@ -24,18 +24,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        if (!Python.isStarted()) {
-//            Python.start(AndroidPlatform(this))
-//        }
-//
-//        val py = Python.getInstance()
-//
-//        val module = py.getModule("test_module")
-//
-//        val result = module.callAttr("hello")
-//
-//        Log.d("PYTHON", result.toString())
-
         handleIntent(intent)
 
         setContent {

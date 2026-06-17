@@ -241,7 +241,7 @@ private fun DtcCodeCard(
 @Composable
 private fun rememberDtcInfo(code: String): DtcInfo {
     val normalizedCode = code.trim().uppercase()
-    val knownTitle = knownDtcTitles[normalizedCode]
+    val knownTitleResId = knownDtcTitleResIds[normalizedCode]
     val system = when (normalizedCode.firstOrNull()) {
         'P' -> stringResource(R.string.dtc_system_powertrain)
         'B' -> stringResource(R.string.dtc_system_body)
@@ -249,8 +249,8 @@ private fun rememberDtcInfo(code: String): DtcInfo {
         'U' -> stringResource(R.string.dtc_system_network)
         else -> stringResource(R.string.dtc_system_unknown)
     }
-    val title = knownTitle ?: stringResource(R.string.dtc_unknown_title)
-    val description = knownTitle?.let {
+    val title = knownTitleResId?.let { stringResource(it) } ?: stringResource(R.string.dtc_unknown_title)
+    val description = knownTitleResId?.let {
         stringResource(R.string.dtc_known_description)
     } ?: stringResource(R.string.dtc_unknown_description)
 
@@ -269,36 +269,37 @@ private data class DtcInfo(
     val description: String
 )
 
-private val knownDtcTitles = mapOf(
-    "P0100" to "Mass or Volume Air Flow Circuit",
-    "P0101" to "Mass or Volume Air Flow Circuit Range/Performance",
-    "P0102" to "Mass or Volume Air Flow Circuit Low Input",
-    "P0103" to "Mass or Volume Air Flow Circuit High Input",
-    "P0110" to "Intake Air Temperature Sensor Circuit",
-    "P0115" to "Engine Coolant Temperature Sensor Circuit",
-    "P0120" to "Throttle/Pedal Position Sensor Circuit",
-    "P0130" to "Oxygen Sensor Circuit Bank 1 Sensor 1",
-    "P0171" to "System Too Lean Bank 1",
-    "P0172" to "System Too Rich Bank 1",
-    "P0300" to "Random/Multiple Cylinder Misfire Detected",
-    "P0301" to "Cylinder 1 Misfire Detected",
-    "P0302" to "Cylinder 2 Misfire Detected",
-    "P0303" to "Cylinder 3 Misfire Detected",
-    "P0304" to "Cylinder 4 Misfire Detected",
-    "P0325" to "Knock Sensor Circuit Bank 1",
-    "P0335" to "Crankshaft Position Sensor Circuit",
-    "P0340" to "Camshaft Position Sensor Circuit Bank 1",
-    "P0420" to "Catalyst System Efficiency Below Threshold Bank 1",
-    "P0430" to "Catalyst System Efficiency Below Threshold Bank 2",
-    "P0440" to "Evaporative Emission Control System",
-    "P0442" to "Evaporative Emission Control System Leak Detected",
-    "P0455" to "Evaporative Emission Control System Leak Detected Gross Leak",
-    "P0500" to "Vehicle Speed Sensor",
-    "P0562" to "System Voltage Low",
-    "P0700" to "Transmission Control System",
-    "U0100" to "Lost Communication With ECM/PCM",
-    "U0121" to "Lost Communication With Anti-Lock Brake System Control Module"
+private val knownDtcTitleResIds = mapOf<String, Int>(
+    "P0100" to R.string.dtc_title_p0100,
+    "P0101" to R.string.dtc_title_p0101,
+    "P0102" to R.string.dtc_title_p0102,
+    "P0103" to R.string.dtc_title_p0103,
+    "P0110" to R.string.dtc_title_p0110,
+    "P0115" to R.string.dtc_title_p0115,
+    "P0120" to R.string.dtc_title_p0120,
+    "P0130" to R.string.dtc_title_p0130,
+    "P0171" to R.string.dtc_title_p0171,
+    "P0172" to R.string.dtc_title_p0172,
+    "P0300" to R.string.dtc_title_p0300,
+    "P0301" to R.string.dtc_title_p0301,
+    "P0302" to R.string.dtc_title_p0302,
+    "P0303" to R.string.dtc_title_p0303,
+    "P0304" to R.string.dtc_title_p0304,
+    "P0325" to R.string.dtc_title_p0325,
+    "P0335" to R.string.dtc_title_p0335,
+    "P0340" to R.string.dtc_title_p0340,
+    "P0420" to R.string.dtc_title_p0420,
+    "P0430" to R.string.dtc_title_p0430,
+    "P0440" to R.string.dtc_title_p0440,
+    "P0442" to R.string.dtc_title_p0442,
+    "P0455" to R.string.dtc_title_p0455,
+    "P0500" to R.string.dtc_title_p0500,
+    "P0562" to R.string.dtc_title_p0562,
+    "P0700" to R.string.dtc_title_p0700,
+    "U0100" to R.string.dtc_title_u0100,
+    "U0121" to R.string.dtc_title_u0121
 )
+
 
 @Preview
 @Composable

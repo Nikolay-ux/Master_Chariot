@@ -6,6 +6,4 @@ plugins {
     alias(libs.plugins.ksp) apply false
     kotlin("plugin.serialization") version "1.9.0" apply false
     alias(libs.plugins.hilt) apply false
-
-    id("com.chaquo.python") version "17.0.0" apply false
 }

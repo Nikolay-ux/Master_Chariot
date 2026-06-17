@@ -1,12 +1,15 @@
 package com.nikolayux.masterchariot.feature.maintenance.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nikolayux.masterchariot.R
 import com.nikolayux.masterchariot.feature.car.domain.Car
 import com.nikolayux.masterchariot.feature.car.domain.CarRepository
 import com.nikolayux.masterchariot.feature.maintenance.domain.MaintenanceRecord
 import com.nikolayux.masterchariot.feature.maintenance.domain.MaintenanceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +23,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class MaintenanceViewModel @Inject constructor(
     private val carRepository: CarRepository,
-    private val maintenanceRepository: MaintenanceRepository
+    private val maintenanceRepository: MaintenanceRepository,
+    @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MaintenanceState())
@@ -94,7 +98,7 @@ class MaintenanceViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true) }
             carRepository.updateCar(car.copy(mileage = mileage))
-            _state.update { it.copy(isSaving = false, message = "Пробег обновлен") }
+            _state.update { it.copy(isSaving = false, message = R.string.maintenance_message_mileage_updated) }
         }
     }
 
@@ -112,11 +116,11 @@ class MaintenanceViewModel @Inject constructor(
             maintenanceRepository.addRecord(
                 MaintenanceRecord(
                     carId = car.id,
-                    action = OIL_CHANGE_ACTION,
+                    action = context.getString(R.string.maintenance_action_oil),
                     mileage = mileage
                 )
             )
-            _state.update { it.copy(isSaving = false, message = "ТО отмечено") }
+            _state.update { it.copy(isSaving = false, message = R.string.maintenance_message_service_completed) }
         }
     }
 
@@ -131,7 +135,7 @@ class MaintenanceViewModel @Inject constructor(
         val mileage = state.actionMileageInput.toIntOrNull()
 
         if (action.isBlank() || mileage == null) {
-            _state.update { it.copy(message = "Заполните действие и пробег") }
+            _state.update { it.copy(message = R.string.maintenance_message_fill_action_and_mileage) }
             return
         }
 
@@ -150,7 +154,7 @@ class MaintenanceViewModel @Inject constructor(
                     selectedAction = null,
                     customActionInput = "",
                     actionMileageInput = it.currentMileage.toString(),
-                    message = "Запись добавлена"
+                    message = R.string.maintenance_message_record_added
                 )
             }
         }
@@ -166,6 +170,5 @@ class MaintenanceViewModel @Inject constructor(
 
     companion object {
         const val OTHER_ACTION = "__other__"
-        private const val OIL_CHANGE_ACTION = "Замена масла"
     }
 }
