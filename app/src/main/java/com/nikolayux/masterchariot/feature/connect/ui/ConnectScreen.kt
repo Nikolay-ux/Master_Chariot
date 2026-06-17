@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothDevice
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -165,12 +164,21 @@ fun ConnectScreen(
 ) {
     val currentState by state.collectAsState()
 
-    LaunchedEffect(currentState.discoveredDevices) {
-        Log.d(
-            "BT_UI",
-            "devices = ${currentState.discoveredDevices.size}"
-        )
-    }
+    ConnectScreenContent(
+        state = currentState,
+        modifier = modifier,
+        onIntent = onIntent
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+@Composable
+private fun ConnectScreenContent(
+    state: ConnectState,
+    modifier: Modifier = Modifier,
+    onIntent: (ConnectMessage) -> Unit = {},
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -191,19 +199,15 @@ fun ConnectScreen(
                     }
                 },
                 actions = {
-                    if (currentState.isBluetoothEnabled && !currentState.isLoading) {
+                    if (state.isBluetoothEnabled && !state.isLoading) {
                         TextButton(
-                            onClick = {
-                                onIntent(ConnectMessage.StartDiscovery)
-                            }
+                            onClick = { onIntent(ConnectMessage.StartDiscovery) }
                         ) {
                             Text(stringResource(R.string.bt_find))
                         }
-                    } else if (currentState.isBluetoothEnabled) {
+                    } else if (state.isBluetoothEnabled) {
                         TextButton(
-                            onClick = {
-                                onIntent(ConnectMessage.StopDiscovery)
-                            }
+                            onClick = { onIntent(ConnectMessage.StopDiscovery) }
                         ) {
                             Text(stringResource(R.string.bt_stop_find))
                         }
@@ -212,23 +216,18 @@ fun ConnectScreen(
             )
         }
     ) { padding ->
-
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(padding),
+                .padding(padding)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                BluetoothContent(
-                    state = currentState,
-                    onIntent = onIntent,
-                    modifier = Modifier.weight(1f)
-                )
-            }
+            BluetoothContent(
+                state = state,
+                onIntent = onIntent,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -355,28 +354,38 @@ fun DeviceItem(
     )
 }
 
-@Preview
+@Preview(name = "Bluetooth disabled", showBackground = true)
 @Composable
-private fun ConnectScreenEnabledPreview() {
+private fun ConnectScreenDisabledPreview() {
     MasterChariotTheme {
-        BluetoothContent(
-            state = ConnectState(
-                isBluetoothEnabled = true
-            ),
-            onIntent = {}
+        ConnectScreenContent(
+            state = ConnectState(isBluetoothEnabled = false),
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
 
-@Preview
+@Preview(name = "Bluetooth search", showBackground = true)
 @Composable
-private fun ConnectScreenDisabledPreview() {
+private fun ConnectScreenSearchingPreview() {
     MasterChariotTheme {
-        BluetoothContent(
+        ConnectScreenContent(
             state = ConnectState(
-                isBluetoothEnabled = false
+                isBluetoothEnabled = true,
+                isLoading = true
             ),
-            onIntent = {}
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
+@Preview(name = "Bluetooth empty", showBackground = true)
+@Composable
+private fun ConnectScreenEmptyPreview() {
+    MasterChariotTheme {
+        ConnectScreenContent(
+            state = ConnectState(isBluetoothEnabled = true),
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
