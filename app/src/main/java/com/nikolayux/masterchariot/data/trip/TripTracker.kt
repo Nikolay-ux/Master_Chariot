@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -180,17 +179,5 @@ class TripTracker @Inject constructor(
             previousRemainingKm = previousRemainingKm,
             currentRemainingKm = currentRemainingKm
         )
-    }
-
-    fun getTripDistance(): Double {
-        return tripDistanceKm
-    }
-
-    fun getTripTimeSeconds(): Long {
-        return tripTimeSeconds
-    }
-
-    fun release() {
-        scope.cancel()
     }
 }
